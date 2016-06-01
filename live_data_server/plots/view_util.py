@@ -1,52 +1,57 @@
 """
     Utility functions to support views.
 """
-import datetime
-import numpy as np
-from plotly.offline import plot
-import plotly.graph_objs as go
+from plots.models import Instrument, DataRun, PlotData
 
-def get_plot_as_json():
+def get_or_create_run(instrument, run_id, create=True):
     """
-        Generates normal distributed 2D points
-        Number of points depends on the real time seconds.
+        Retrieve a run entry, or create it.
+        @param instrument: instrument name
+        @param run_id: run number
+        @param create: if True, missing entries will be created
     """
-    now = datetime.datetime.now()
-    n_points = 100 * now.second;
-    mean = [0, 0]
-    cov = [[1, 0], [0, 1]]  # diagonal covariance
-    x, y = np.random.multivariate_normal(mean, cov, n_points).T
-    data = dict(
-        x=x.tolist(), y=y.tolist(), mode='markers', name='points',
-        marker=dict(color='rgb(0,0,0)', size=4, opacity=0.4)
-    )
-    return data
 
-def get_plot_as_div():
-    """
-        Return a plot as a div
-    """
-    trace = go.Scatter(get_plot_as_json())
-    data = [trace]
+    # Get or create the instrument
+    instrument_list = Instrument.objects.filter(name=instrument.lower())
+    if len(instrument_list) > 0:
+        instrument_obj = instrument_list[0]
+    elif create:
+        instrument_obj = Instrument()
+        instrument_obj.name = instrument.lower()
+        instrument_obj.save()
+    else:
+        return None
 
-    layout = go.Layout(
-        showlegend=False,
-        autosize=False,
-        width=800,
-        height=700,
-        xaxis=dict(
-            range=[-4, 4],
-        ),
-        yaxis=dict(
-            range=[-4, 4],
-        ),
-        margin=dict(
-            t=50
-        ),
-        hovermode='closest',
-        bargap=0,
-    )
+    # Get or create the run item
+    run_list = DataRun.objects.filter(instrument=instrument_obj, run_number=run_id)
+    if len(run_list) > 0:
+        run_obj = run_list[0]
+    elif create:
+        run_obj = DataRun()
+        run_obj.instrument = instrument_obj
+        run_obj.run_number = run_id
+        run_obj.save()
+    else:
+        return None
 
-    fig = go.Figure(data=data, layout=layout)
-    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
-    return plot_div
+    return run_obj
+
+def get_plot_data(instrument, run_id, data_type=None):
+    """
+        Get plot data for requested instrument and run number
+        @param instrument: instrument name
+        @param run_id: run number
+    """
+    run_obj = get_or_create_run(instrument, run_id, create=False)
+    plot_data_list = PlotData.objects.filter(data_run=run_obj)
+    for plot in plot_data_list:
+        if data_type is not None:
+            if plot.is_data_type_valid(data_type):
+                return plot
+        else:
+            return plot
+    return None
+
+def store_plot_data(instrument, run_id, data):
+    pass
+    

@@ -7,17 +7,17 @@
 {% block content %}
 
 <h1>Live plot</h1>
-<p class="lead">Update every few seconds</p>
+<p class="lead">Updates every few seconds</p>
 <div id="graph"></div>
 
 <script type="text/javascript">
-    var as_div={{as_div}};
+    var as_div={{data_type}};
     (function poll() {
         setTimeout(function() {
             if (as_div == 1) {
                 $.ajax({
                     type: "GET",
-                    url: "{% url 'plots:plot_live_update' %}?as_div=1",
+                    url: "{{update_url}}",
                     success: function(data) {
                         $('#graph').replaceWith("<div id='graph'>"+data+"</div>");
                     },
@@ -28,7 +28,7 @@
             } else {
                 $.ajax({
                     type: "GET",
-                    url: "{% url 'plots:plot_live_update' %}",
+                    url: "{{update_url}}",
                     success: function(data) {
                       var plot_div = document.getElementById('graph')
                       Plotly.newPlot(plot_div, data);

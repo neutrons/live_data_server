@@ -2,6 +2,8 @@
     Plot data models
 """
 from __future__ import unicode_literals
+import sys
+import logging
 from django.db import models
 
 class Instrument(models.Model):
@@ -29,6 +31,7 @@ class DataRun(models.Model):
     def __unicode__(self):
         return "%s_%d_%s" % (self.instrument, self.run_number, self.run_id)
 
+
 class PlotData(models.Model):
     """
         Table of plot data. This data can either be json or html
@@ -47,4 +50,32 @@ class PlotData(models.Model):
 
     def __unicode__(self):
         return "%s" % self.data_run
+
+    def is_div(self):
+        """
+            Return whether the data is a <div>
+        """
+        return self.data_type%100 == 1
+
+    def is_data_type_valid(self, data_type):
+        """
+            Verify that a given data type matches the stored data
+            @param data_type: data type to check
+        """
+        try:
+            data_type = int(data_type)
+            return self.data_type == data_type%100
+        except ValueError:
+            logging.getLogger('plots.models').error("Could not verify data type: %s", sys.exc_value)
+            return False
+
+    @classmethod
+    def get_data_type_from_data(cls, data):
+        """
+            Inspect the data to guess what type it is.
+            @param data: block of text to store
+        """
+        if data.startswith('<div'):
+            return 1
+        return 0
 
