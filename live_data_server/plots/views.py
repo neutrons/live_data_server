@@ -4,9 +4,10 @@
 import logging
 import json
 from django.shortcuts import render_to_response
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseNotFound, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
+from django.views.decorators.cache import cache_page
 
 from plots.models import PlotData
 from . import view_util
@@ -28,7 +29,7 @@ def live_plot(request, instrument, run_id):
     return render_to_response('plots/live_plot.html',
                               template_values)
 
-
+@cache_page(15)
 def update_as_json(request, instrument, run_id):
     """
         Ajax call to get JSON data
@@ -42,13 +43,15 @@ def update_as_json(request, instrument, run_id):
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
     if plot_data is None:
-        logging.error("No data available for %s %s", instrument, run_id)
-        return HttpResponseBadRequest()
+        error_msg = "No data available for %s %s" % (instrument, run_id)
+        logging.error(error_msg)
+        return HttpResponseNotFound(error_msg)
 
     json_data = json.loads(plot_data.data)
     return JsonResponse([json_data], safe=False)
 
 
+@cache_page(15)
 def update_as_html(request, instrument, run_id):
     """
         Ajax call to get plot data as an html <div>
@@ -62,8 +65,9 @@ def update_as_html(request, instrument, run_id):
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
     if plot_data is None:
-        logging.error("No data available for %s %s", instrument, run_id)
-        return HttpResponseBadRequest()
+        error_msg = "No data available for %s %s" % (instrument, run_id)
+        logging.error(error_msg)
+        return HttpResponseNotFound(error_msg)
 
     return HttpResponse(plot_data.data)
 

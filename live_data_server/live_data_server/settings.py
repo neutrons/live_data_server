@@ -24,8 +24,10 @@ SECRET_KEY = 'bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
  
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['livedata.sns.gov']
 
 
 # Application definition
@@ -85,8 +87,14 @@ DATABASES = {
         'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
         }
 }
+DATABASES['default']['CONN_MAX_AGE']=5
 
-STATIC_ROOT = '/var/www/livedata/static/'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'webcache',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -125,3 +133,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/var/www/livedata/static/'
+
+# Import local settings if available
+try:
+    from local_settings import *
+except ImportError, e:
+    LOCAL_SETTINGS = False
+    pass
+
