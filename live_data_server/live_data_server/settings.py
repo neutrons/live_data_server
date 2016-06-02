@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
  
 ALLOWED_HOSTS = []
 
@@ -77,11 +77,16 @@ WSGI_APPLICATION = 'live_data_server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',      #, 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'livedata_db',                      # Or path to database file if using sqlite3.
+        'USER': 'livedata',                      # Not used with sqlite3.
+        'PASSWORD': 'icat',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
+        }
 }
 
+STATIC_ROOT = '/var/www/livedata/static/'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
