@@ -10,14 +10,16 @@ import datetime
 from plotly.offline import plot
 import plotly.graph_objs as go
 import numpy as np
+import json
+import argparse
+
 sys.path.insert(0, '../live_data_server')
 
-GENERATE_DATA = True
+JSON_DATA = False
 API_USER = 'admin'
 API_PWD = 'adminadmin'
 INSTRUMENT = "REF_L"
 RUN_NUMBER = 123456
-FILE_PATH = "test_plot.html"
 UPLOAD_URL = "http://127.0.0.1:8000/plots/$instrument/$run_number/upload_plot_data/"
 
 
@@ -61,14 +63,24 @@ def get_plot_as_div():
     return plot_div
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Test plot data producer')
+    parser.add_argument('--json', help='Produce json data',
+                        action='store_true', dest='as_json')
+    parser.add_argument('--html', help='Produce html data',
+                        action='store_false', dest='as_json')
+    namespace = parser.parse_args()
+    as_json_data = JSON_DATA if namespace.as_json is None else namespace.as_json
+
     monitor_user = {'username': API_USER, 'password': API_PWD}
     url_template = string.Template(UPLOAD_URL)
     url = url_template.substitute(instrument=INSTRUMENT, run_number=RUN_NUMBER)
 
-    if GENERATE_DATA:
-        files = {'file': get_plot_as_div()}
+    if as_json_data:
+        print("Producing json data")
+        files = {'file': json.dumps(get_plot_as_json())}
     else:
-        files = {'file': open(FILE_PATH, 'rb')}
+        print("Producing html data")
+        files = {'file': get_plot_as_div()}
 
     request = requests.post(url, data=monitor_user, files=files, verify=False)
     print(request.status_code)

@@ -6,6 +6,11 @@ import sys
 import logging
 from django.db import models
 
+
+DATA_TYPES = {'json': 0, 'html': 1, 'div': 1}
+DATA_TYPE_INFO = {0: {'name': 'json'},
+                  1: {'name': 'html'}}
+
 class Instrument(models.Model):
     """
         Table of instruments
@@ -64,9 +69,9 @@ class PlotData(models.Model):
         """
         try:
             data_type = int(data_type)
-            return self.data_type == data_type%100
+            return self.data_type == data_type%100 or data_type == -1
         except ValueError:
-            logging.getLogger('plots.models').error("Could not verify data type: %s", sys.exc_value)
+            logging.error("Could not verify data type: %s", sys.exc_value)
             return False
 
     @classmethod
@@ -76,6 +81,28 @@ class PlotData(models.Model):
             @param data: block of text to store
         """
         if data.startswith('<div'):
-            return 1
-        return 0
+            return DATA_TYPES['html']
+        return DATA_TYPES['json']
 
+    @classmethod
+    def get_data_type_from_string(cls, type_string):
+        """
+            Returns the correct data type ID for a given string representation
+        """
+        return DATA_TYPES.get(type_string, DATA_TYPES['json'])
+
+    @classmethod
+    def data_type_as_string(cls, data_type):
+        """
+            Return an internal name to use for a given data_type.
+            This name is generally used in function names and relates
+            to the data format (json or html). In principle, different
+            data types can return the same string.
+
+            @param data_type: data type ID [integer]
+        """
+        data_type = int(data_type)
+        data_type_info = DATA_TYPE_INFO.get(data_type)
+        if data_type_info is not None:
+            return data_type_info['name']
+        return None

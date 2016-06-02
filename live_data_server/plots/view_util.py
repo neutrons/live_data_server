@@ -1,6 +1,7 @@
 """
     Utility functions to support views.
 """
+import datetime
 from plots.models import Instrument, DataRun, PlotData
 
 def get_or_create_run(instrument, run_id, create=True):
@@ -52,6 +53,26 @@ def get_plot_data(instrument, run_id, data_type=None):
             return plot
     return None
 
-def store_plot_data(instrument, run_id, data):
-    pass
-    
+def store_plot_data(instrument, run_id, data, data_type):
+    """
+        Store plot data
+        @param instrument: instrument name
+        @param run_id: run number
+        @param data: data to be stored
+        @param data_type: requested data type
+    """
+    run_object = get_or_create_run(instrument, run_id)
+
+    # Look for a data file and treat it differently
+    data_entries = PlotData.objects.filter(data_run=run_object)
+    if len(data_entries) > 0:
+        plot_data = data_entries[0]
+    else:
+        # No entry was found, create one
+        plot_data = PlotData()
+        plot_data.data_run = run_object
+        plot_data.timestamp = datetime.datetime.utcnow()
+
+    plot_data.data = data
+    plot_data.data_type = data_type
+    plot_data.save()
