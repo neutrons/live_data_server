@@ -24,7 +24,7 @@ SECRET_KEY = 'bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-CSRF_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
  
 ALLOWED_HOSTS = ['livedata.sns.gov']
