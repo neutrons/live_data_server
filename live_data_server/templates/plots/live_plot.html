@@ -31,7 +31,7 @@
                     url: "{{update_url}}",
                     success: function(data) {
                       var plot_div = document.getElementById('graph')
-                      Plotly.newPlot(plot_div, data);
+                      Plotly.newPlot(plot_div, [data]);
                     },
                     dataType: "json",
                     complete: poll,

@@ -48,7 +48,7 @@ def update_as_json(request, instrument, run_id):
         return HttpResponseNotFound(error_msg)
 
     json_data = json.loads(plot_data.data)
-    return JsonResponse([json_data], safe=False)
+    return JsonResponse(json_data, safe=False)
 
 
 @cache_page(15)
