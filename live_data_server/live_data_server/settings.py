@@ -23,9 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True#False
 #CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['.ornl.gov', '.sns.gov', 'localhost', '127.0.0.1']
  
 ALLOWED_HOSTS = ['livedata.sns.gov']
 
@@ -40,11 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
 ]
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -54,6 +57,8 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'live_data_server.urls'
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {

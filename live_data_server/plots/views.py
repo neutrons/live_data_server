@@ -51,6 +51,7 @@ def update_as_json(request, instrument, run_id):
     return JsonResponse(json_data, safe=False)
 
 
+
 @cache_page(15)
 def update_as_html(request, instrument, run_id):
     """
@@ -69,8 +70,9 @@ def update_as_html(request, instrument, run_id):
         logging.error(error_msg)
         return HttpResponseNotFound(error_msg)
 
-    return HttpResponse(plot_data.data)
-
+    response = HttpResponse(str(plot_data.data), content_type="text/html")
+    response['Content-Length'] = len(response.content)
+    return response
 
 @csrf_exempt
 def upload_plot_data(request, instrument, run_id):
