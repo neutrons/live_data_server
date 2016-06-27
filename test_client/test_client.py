@@ -68,12 +68,16 @@ if __name__ == "__main__":
                         action='store_true', dest='as_json')
     parser.add_argument('--html', help='Produce html data',
                         action='store_false', dest='as_json')
+    parser.add_argument('-r', metavar='runid', type=int, help='Run number (int)',
+                        dest='runid', required=True)
+    parser.add_argument('-c', metavar='config', help='Config file',
+                        dest='config_file', required=False)
     namespace = parser.parse_args()
     as_json_data = JSON_DATA if namespace.as_json is None else namespace.as_json
 
     monitor_user = {'username': API_USER, 'password': API_PWD}
     url_template = string.Template(UPLOAD_URL)
-    url = url_template.substitute(instrument=INSTRUMENT, run_number=RUN_NUMBER)
+    url = url_template.substitute(instrument=INSTRUMENT, run_number=namespace.runid)
 
     if as_json_data:
         print("Producing json data")
@@ -82,5 +86,10 @@ if __name__ == "__main__":
         print("Producing html data")
         files = {'file': get_plot_as_div()}
 
-    request = requests.post(url, data=monitor_user, files=files, verify=False)
+    if namespace.config_file is not None:
+        sys.path.append('/opt/postprocessing/postprocessing')
+        from publish_plot import publish_plot
+        request = publish_plot(INSTRUMENT, namespace.runid, files=files, config_file=namespace.config_file)
+    else:
+        request = requests.post(url, data=monitor_user, files=files, verify=False)
     print(request.status_code)
