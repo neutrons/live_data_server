@@ -1,7 +1,7 @@
 """
     Utility functions to support views.
 """
-import datetime
+from django.utils import timezone
 from plots.models import Instrument, DataRun, PlotData
 
 def get_or_create_run(instrument, run_id, create=True):
@@ -71,8 +71,9 @@ def store_plot_data(instrument, run_id, data, data_type):
         # No entry was found, create one
         plot_data = PlotData()
         plot_data.data_run = run_object
-        plot_data.timestamp = datetime.datetime.utcnow()
+        plot_data.timestamp = timezone.now()
 
     plot_data.data = data
     plot_data.data_type = data_type
+    plot_data.timestamp = timezone.now()
     plot_data.save()
