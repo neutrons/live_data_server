@@ -22,13 +22,16 @@ def live_plot(request, instrument, run_id):
     data_type = request.GET.get('data_type', default=data_type_default)
     update_url = reverse('plots:update_as_%s' % PlotData.data_type_as_string(data_type),
                          kwargs={'instrument': instrument, 'run_id': run_id})
-
+    client_key = view_util.generate_key(instrument, run_id)
+    if client_key is not None:
+        update_url += "?key=%s" % client_key
     template_values = {}
     template_values['data_type'] = data_type
     template_values['update_url'] = update_url
     return render_to_response('plots/live_plot.html',
                               template_values)
 
+@view_util.check_key
 @cache_page(15)
 def update_as_json(request, instrument, run_id):
     """
@@ -50,8 +53,7 @@ def update_as_json(request, instrument, run_id):
     json_data = json.loads(plot_data.data)
     return JsonResponse(json_data, safe=False)
 
-
-
+@view_util.check_key
 @cache_page(15)
 def update_as_html(request, instrument, run_id):
     """

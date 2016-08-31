@@ -1,5 +1,7 @@
 prefix := /var/www/livedata
 app_dir := live_data_server
+DJANGO_COMPATIBLE:=$(shell python -c "import django;t=0 if django.VERSION[1]<9 else 1; print t")
+DJANGO_VERSION:=$(shell python -c "import django;print django.__version__")
 
 all:
 	@echo "Run make install to install the live data server"
@@ -8,6 +10,13 @@ check:
 	# Check dependencies
 	@python -c "import django" || echo "\nERROR: Django is not installed: www.djangoproject.com\n"
 	@python -c "import psycopg2" || echo "\nWARNING: psycopg2 is not installed: http://initd.org/psycopg\n"
+	@python -c "import corsheaders" || echo "\nWARNING: django-cors-headers is not installed: https://github.com/ottoyiu/django-cors-headers\n"
+
+ifeq ($(DJANGO_COMPATIBLE),1)
+	@echo "Detected Django $(DJANGO_VERSION)"
+else
+	$(error Detected Django $(DJANGO_VERSION) < 1.9. The web monitor requires at least Django 1.9)
+endif
 
 
 install: webapp

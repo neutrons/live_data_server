@@ -1,8 +1,54 @@
+#pylint: disable=invalid-name, bare-except
 """
     Utility functions to support views.
 """
+import sys
+import logging
 from django.utils import timezone
+from django.http import HttpResponse
+from django.conf import settings
 from plots.models import Instrument, DataRun, PlotData
+import hashlib
+
+def generate_key(instrument, run_id):
+    """
+        Generate a secret key for a run on a given instrument
+        @param instrument: instrument name
+        @param run_id: run number
+    """
+    if not hasattr(settings, "LIVE_PLOT_SECRET_KEY"):
+        return None
+    secret_key = settings.LIVE_PLOT_SECRET_KEY
+    if len(secret_key) == 0:
+        return None
+    else:
+        h = hashlib.sha1()
+        h.update("%s%s%s" % (instrument.upper(), secret_key, run_id))
+        return h.hexdigest()
+
+def check_key(fn):
+    """
+        Function decorator to check whether a user is allowed
+        to see a view.
+
+        Usually used for AJAX calls.
+    """
+    def request_processor(request, instrument, run_id):
+        """
+            Decorator function
+        """
+        try:
+            client_key = request.GET.get('key', None)
+            server_key = generate_key(instrument, run_id)
+            # Temporary bypass during testing
+            # Remove client_key is None condition when we deploy
+            if client_key is None or server_key is None or client_key == server_key:
+                return fn(request, instrument, run_id)
+            return HttpResponse(status=401)
+        except:
+            logging.error("[%s]: %s", request.path, sys.exc_value)
+            return HttpResponse(status=500)
+    return request_processor
 
 def get_or_create_run(instrument, run_id, create=True):
     """
