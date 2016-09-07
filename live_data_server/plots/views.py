@@ -39,9 +39,6 @@ def update_as_json(request, instrument, run_id):
         @param instrument: instrument name
         @param run_id: run number
     """
-    if not request.is_ajax():
-        logging.warning("Received non-ajax plot_live_update request")
-
     data_type = PlotData.get_data_type_from_string('json')
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
@@ -61,9 +58,6 @@ def update_as_html(request, instrument, run_id):
         @param instrument: instrument name
         @param run_id: run number
     """
-    if not request.is_ajax():
-        logging.warning("Received non-ajax plot_live_update request")
-
     data_type = PlotData.get_data_type_from_string('html')
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
