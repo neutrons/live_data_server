@@ -25,7 +25,7 @@ SECRET_KEY = 'bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e'
 TIME_ZONE = 'America/New_York'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True#False
+DEBUG = False
 #CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = ['.ornl.gov', '.sns.gov', 'localhost', '127.0.0.1']
