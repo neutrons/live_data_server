@@ -117,11 +117,15 @@ def store_user_data(user, data_id, data, data_type):
     if len(run_list) > 0:
         run_obj = run_list.latest('created_on')
     else:
-        run_count = DataRun.objects.filter(instrument=instrument_obj).count()
         run_obj = DataRun()
         run_obj.instrument = instrument_obj
-        run_obj.run_number = run_count+1
+        run_obj.run_number = 0
         run_obj.run_id = data_id
+        run_obj.save()
+        # Since user data have no run number, force the run number to be the PK,
+        # which is unique and will allow use to retrieve the data live normal
+        # instrument data.
+        run_obj.run_number = run_obj.id
         run_obj.save()
 
     # Look for a data file and treat it differently
