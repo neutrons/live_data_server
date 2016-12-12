@@ -20,8 +20,26 @@ API_USER = 'admin'
 API_PWD = 'adminadmin'
 INSTRUMENT = "REF_L"
 RUN_NUMBER = 123456
-UPLOAD_URL = "http://127.0.0.1:8000/plots/$instrument/$run_number/upload_plot_data/"
+UPLOAD_URL = "http://127.0.0.1:8888/plots/$instrument/$run_number/upload_plot_data/"
+USER_UPLOAD_URL = "http://127.0.0.1:8888/plots/$user/upload_user_data/"
 
+def test_sine_wave(run_number, instrument):
+    """
+        Produce test sine wave plot
+    """
+    now = datetime.datetime.now()
+    x = np.arange(1, now.second)
+    y = np.sin(x)
+    x2 = np.arange(1, now.second)
+    y2 = np.sin(x+1.0)
+    err = 0.2*np.ones(len(x))
+    sys.path.append('/opt/postprocessing/postprocessing')
+    from publish_plot import plot1d
+    data = [[x, y, err, 2*err], [x2, y2, err, 2*err]]
+    data_names = ['data', 'offset']
+    return plot1d(run_number, data_list=data, instrument=instrument,
+                  x_title='theta', y_title='sin(theta)',
+                  data_names=data_names)
 
 def get_plot_as_json():
     """
@@ -70,6 +88,10 @@ if __name__ == "__main__":
                         action='store_false', dest='as_json')
     parser.add_argument('-r', metavar='runid', type=int, help='Run number (int)',
                         dest='runid', required=True)
+    parser.add_argument('-d', metavar='description', help='Data description',
+                        dest='description', required=False)
+    parser.add_argument('-i', metavar='instrument', help='Instrument',
+                        dest='instrument', required=True)
     parser.add_argument('-c', metavar='config', help='Config file',
                         dest='config_file', required=False)
     namespace = parser.parse_args()
@@ -77,7 +99,7 @@ if __name__ == "__main__":
 
     monitor_user = {'username': API_USER, 'password': API_PWD}
     url_template = string.Template(UPLOAD_URL)
-    url = url_template.substitute(instrument=INSTRUMENT, run_number=namespace.runid)
+    url = url_template.substitute(instrument=namespace.instrument, run_number=namespace.runid)
 
     if as_json_data:
         print("Producing json data")
@@ -89,7 +111,14 @@ if __name__ == "__main__":
     if namespace.config_file is not None:
         sys.path.append('/opt/postprocessing/postprocessing')
         from publish_plot import publish_plot
-        request = publish_plot(INSTRUMENT, namespace.runid, files=files, config_file=namespace.config_file)
+        request = publish_plot(namespace.instrument, namespace.runid,
+                               files=files, config_file=namespace.config_file)
     else:
+        #request = test_sine_wave(namespace.runid, namespace.instrument)
+        if namespace.description is not None:
+            url_template = string.Template(USER_UPLOAD_URL)
+            url = url_template.substitute(user=namespace.instrument)
+            monitor_user['data_id'] = namespace.description
+
         request = requests.post(url, data=monitor_user, files=files, verify=False)
     print(request.status_code)

@@ -1,3 +1,4 @@
+#pylint: disable=unused-argument
 """
     Definition of views
 """
@@ -8,6 +9,7 @@ from django.http import HttpResponseNotFound, JsonResponse, HttpResponse, HttpRe
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import cache_page
+from django.contrib.auth import login, authenticate
 
 from plots.models import PlotData
 from . import view_util
@@ -70,6 +72,34 @@ def update_as_html(request, instrument, run_id):
     response['Content-Length'] = len(response.content)
     return response
 
+def _store(request, instrument, run_id=None, as_user=False):
+    """
+        Store plot data
+        @param instrument: instrument name or user name
+        @param run_id: run number
+        @param as_user: if True, we will store as user data
+    """
+    if request.method == 'POST' and 'file' in request.FILES:
+        username = request.POST["username"]
+        password = request.POST["password"]
+        request_user = authenticate(username=username, password=password)
+        if request_user is not None and not request_user.is_anonymous():
+            login(request, request_user)
+
+        if request.user.is_authenticated():
+            raw_data = request.FILES['file'].read()
+            data_type_default = PlotData.get_data_type_from_data(raw_data)
+            data_type = request.POST.get('data_type', default=data_type_default)
+            if as_user:
+                data_id = request.POST.get('data_id', default='')
+                view_util.store_user_data(instrument, data_id, raw_data, data_type)
+            else:
+                view_util.store_plot_data(instrument, run_id, raw_data, data_type)
+    else:
+        return HttpResponseBadRequest()
+
+    return HttpResponse()
+
 @csrf_exempt
 def upload_plot_data(request, instrument, run_id):
     """
@@ -77,12 +107,12 @@ def upload_plot_data(request, instrument, run_id):
         @param instrument: instrument name
         @param run_id: run number
     """
-    if request.method == 'POST' and 'file' in request.FILES:
-        raw_data = request.FILES['file'].read()
-        data_type_default = PlotData.get_data_type_from_data(raw_data)
-        data_type = request.POST.get('data_type', default=data_type_default)
-        view_util.store_plot_data(instrument, run_id, raw_data, data_type)
-    else:
-        return HttpResponseBadRequest()
+    return _store(request, instrument, run_id, as_user=False)
 
-    return HttpResponse()
+@csrf_exempt
+def upload_user_data(request, user):
+    """
+        Upload plot data
+        @param user: user identifier to use
+    """
+    return _store(request, user, as_user=True)
