@@ -144,6 +144,7 @@ def upload_user_data(request, user):
     """
     return _store(request, user, as_user=True)
 
+@csrf_exempt
 @check_credentials
 def get_data_list(request, instrument):
     """
