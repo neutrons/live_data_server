@@ -1,5 +1,7 @@
 FROM centos:centos7
 
+# ENV variables that need to be updated/supplied either from CLI or
+# docker-compose.yml
 ENV DATABASE_NAME=livedata
 ENV DATABASE_USER=postgres
 ENV DATABASE_PASS=postgres
