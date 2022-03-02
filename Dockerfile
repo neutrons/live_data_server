@@ -1,5 +1,11 @@
 FROM centos:centos7
 
+ENV DATABASE_NAME=livedata
+ENV DATABASE_USER=postgres
+ENV DATABASE_PASS=postgres
+ENV DATABASE_PORT=5432
+ENV DATABASE_HOST=db
+
 RUN yum update -y
 RUN yum install -y \
     which \
