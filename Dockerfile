@@ -29,7 +29,7 @@ RUN pip install \
     psycopg2==2.6.2
 
 COPY apache/apache_django_wsgi.conf /etc/httpd/conf.d/
-# COPY third-party/systemctl.py /usr/bin/systemctl
+COPY third-party/systemctl.py /usr/bin/systemctl
 
 WORKDIR /usr/src
 

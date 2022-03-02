@@ -18,6 +18,8 @@ services:
 
   livedata:
     image: live_data:dev
+    ports:
+      - 9999:8000
     environment:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
