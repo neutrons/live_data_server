@@ -85,14 +85,16 @@ WSGI_APPLICATION = 'live_data_server.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',      #, 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'livedata_db',                      # Or path to database file if using sqlite3.
-        'USER': 'livedata',                      # Not used with sqlite3.
-        'PASSWORD': 'icat',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
-        }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",  # , 'mysql', 'sqlite3' or 'oracle'.
+        "NAME": os.environ.get("DATABASE_NAME"),  # Or path to database file if using sqlite3.
+        "USER": os.environ.get("DATABASE_USER"),  # Not used with sqlite3.
+        "PASSWORD": os.environ.get("DATABASE_PASS"),  # Not used with sqlite3.
+        # Set to empty string for localhost. Not used with sqlite3.
+        "HOST": os.environ.get("DATABASE_HOST"),
+        # Set to empty string for default. Not used with sqlite3.
+        "PORT": os.environ.get("DATABASE_PORT"),
+    }
 }
 DATABASES['default']['CONN_MAX_AGE']=5
 
@@ -145,7 +147,7 @@ STATIC_ROOT = '/var/www/livedata/static/'
 # Import local settings if available
 try:
     from local_settings import *
-except ImportError, e:
+except ImportError as e:
     LOCAL_SETTINGS = False
     pass
 
