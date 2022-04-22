@@ -12,6 +12,13 @@ To deploy this application locally for development, there are two options:
   - make sure modify the database instance script to include the creation of the table needed by live-data-server
   - make sure passing the database related environment variables into the live-data-server container.
 
+## Contributing
+
+Create conda environment `livedata`, containing all the requirements 
+```python
+conda env create -f environment.yml
+conda activate livedata
+```
 
 ## Test & Verification
 
