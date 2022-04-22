@@ -22,9 +22,12 @@ conda activate livedata
 
 ## Test & Verification
 
-There is no direct verification of functionality for the containerized live-data-server container due to its design.
-You can verify that the service is running by going to `localhost:9999/admin` after starting the application with `docker-compose up`.
-The log info should tell you that the live-data-server is properly initializing the database as well as the 400 error when trying to access `localhost:9999/admin`.
+There is no direct verification of functionality for the containerized live-data-server
+container due to its design.
+You can verify that the service is running by going to `localhost:9999/admin` after
+starting the application with `docker-compose up`.
+The log info should tell you that the live-data-server is properly initializing the database
+as well as the 400 error when trying to access `localhost:9999/admin`.
 
 ## Deployment to the Test Environment
 - Repository managing the provision for deployment:

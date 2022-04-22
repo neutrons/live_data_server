@@ -57,7 +57,7 @@ webapp: webapp/core
 	
 first_install: webapp/core
 	# Modify and copy the wsgi configuration
-	cp apache/apache_django_wsgi.conf /etc/httpd/conf.d
+	cp config/apache/apache_django_wsgi.conf /etc/httpd/conf.d
 
 .PHONY: check
 .PHONY: first_install

@@ -27,7 +27,7 @@ RUN yum install -y \
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY apache/apache_django_wsgi.conf /etc/httpd/conf.d/
+COPY config/apache/apache_django_wsgi.conf /etc/httpd/conf.d/
 COPY third-party/systemctl.py /usr/bin/systemctl
 
 WORKDIR /usr/src
