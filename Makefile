@@ -3,11 +3,14 @@ app_dir := live_data_server
 DJANGO_COMPATIBLE:=$(shell python -c "import django;t=0 if django.VERSION[1]<9 else 1; print t")
 DJANGO_VERSION:=$(shell python -c "import django;print django.__version__")
 
+help:
+    # this nifty perl one-liner collects all comments headed by the double "#" symbols next to each target and recycles them as comments
+	@perl -nle'print $& if m{^[/a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
+
 all:
 	@echo "Run make install to install the live data server"
 
-check:
-	# Check dependencies
+check:  ## Check dependencies
 	@python -c "import django" || echo "\nERROR: Django is not installed: www.djangoproject.com\n"
 	@python -c "import psycopg2" || echo "\nWARNING: psycopg2 is not installed: http://initd.org/psycopg\n"
 	@python -c "import corsheaders" || echo "\nWARNING: django-cors-headers is not installed: https://github.com/ottoyiu/django-cors-headers\n"
@@ -57,7 +60,8 @@ first_install: webapp/core
 	cp apache/apache_django_wsgi.conf /etc/httpd/conf.d
 
 .PHONY: check
+.PHONY: first_install
+.PHONY: help
 .PHONY: install
 .PHONY: webapp
 .PHONY: webapp/core
-.PHONY: first_install
