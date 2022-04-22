@@ -49,7 +49,7 @@ You need to add a user that you can use for your post requests,
     python manage.py createsuperuser
 
 
-I personally recommend using Postman when interacting with the api.
+I personally recommend using `Postman <https://www.postman.com/>`_ when interacting with the api.
 If you do, set the request body to `form-data`!
 
 Some relevant form-data field keys: 
