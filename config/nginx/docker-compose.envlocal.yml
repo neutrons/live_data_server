@@ -11,7 +11,7 @@ services:
       - web-static:/var/www/livedata/static
       - ./config/nginx/django.conf:/etc/nginx/conf.d/django.conf
       - ./config/nginx/docker-entrypoint.sh:/docker-entrypoint.d/docker-entrypoint.sh
-      - ./config/nginx/wait-for-it.sh:/usr/bin/wait-for-it.sh
+      - ./third-party/wait-for-it.sh:/usr/bin/wait-for-it.sh
     depends_on:
       - livedata
 
