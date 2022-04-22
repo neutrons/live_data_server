@@ -22,11 +22,10 @@ RUN yum install -y \
     # postgresql-server \
     # postgresql-contrib \
     postgresql-devel \
-    python-devel
-RUN pip install \
-    Django==1.9.12 \
-    django-cors-headers==1.3.1 \
-    psycopg2==2.6.2
+    python-devel \
+
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
 COPY apache/apache_django_wsgi.conf /etc/httpd/conf.d/
 COPY third-party/systemctl.py /usr/bin/systemctl
