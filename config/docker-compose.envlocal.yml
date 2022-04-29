@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  db:
+    # do not upgrade to version > 9.6.23 unless you also upgrade livedata image
+    image: code.ornl.gov:4567/rse/images/postgres:9.6.23
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    volumes:
+      - db-data:/var/lib/postgresql/data/
+
+  livedata:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    environment:
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASS: ${DATABASE_PASS}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      LIVE_PLOT_SECRET_KEY: ${LIVE_PLOT_SECRET_KEY}
+    volumes:
+      - ./docker-entrypoint.sh:/usr/bin/docker-entrypoint.sh
+    command: /usr/bin/docker-entrypoint.sh
+    depends_on:
+      db:
+        condition: "service_healthy"
+
+  nginx:
+    image: code.ornl.gov:4567/rse/images/nginx:1.21.1
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
+      - ./config/nginx/docker-entrypoint.sh:/docker-entrypoint.d/docker-entrypoint.sh
+      - ./config/nginx/wait-for-it.sh:/usr/bin/wait-for-it.sh
+    depends_on:
+      - livedata
+
+volumes:
+  db-data:
