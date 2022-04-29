@@ -5,7 +5,7 @@ DJANGO_VERSION:=$(shell python -c "import django;print django.__version__")
 
 # command to run docker compose. change this to be what you have installed
 # this can be overriden on the command line
-# DOCKER_COMPOSE="docker compose" make startdev
+# DOCKER_COMPOSE="docker compose" make docker/pruneall
 DOCKER_COMPOSE ?= docker-compose
 
 help:
