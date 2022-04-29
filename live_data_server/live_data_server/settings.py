@@ -28,7 +28,7 @@ DEBUG = False
 #SESSION_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = ['.ornl.gov', '.sns.gov', 'localhost', '127.0.0.1']
  
-ALLOWED_HOSTS = ['livedata.sns.gov']
+ALLOWED_HOSTS = ['*', 'livedata.sns.gov']
 
 
 # Application definition
