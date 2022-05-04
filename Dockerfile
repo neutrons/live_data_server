@@ -1,13 +1,5 @@
 FROM centos:centos7
 
-# ENV variables that need to be updated/supplied either from CLI or
-# docker-compose.yml
-ENV DATABASE_NAME=livedata
-ENV DATABASE_USER=postgres
-ENV DATABASE_PASS=postgres
-ENV DATABASE_PORT=5432
-ENV DATABASE_HOST=db
-
 RUN yum update -y
 RUN yum install -y \
     which \
@@ -19,25 +11,17 @@ RUN yum install -y \
     mod_wsgi \
     python-pip \
     postgresql \
-    # postgresql-server \
-    # postgresql-contrib \
     postgresql-devel \
-    python-devel
-RUN pip install \
-    Django==1.9.12 \
-    django-cors-headers==1.3.1 \
-    psycopg2==2.6.2
+    python-devel \
+    vim
 
-COPY apache/apache_django_wsgi.conf /etc/httpd/conf.d/
-COPY third-party/systemctl.py /usr/bin/systemctl
+WORKDIR /var/www/livedata
 
-WORKDIR /usr/src
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-# Copy source code
-COPY ./live_data_server ./live_data_server
-COPY ./Makefile .
+COPY requirements_dev.txt .
+RUN pip install -r requirements_dev.txt
 
-# Move the entry-point into the volume
-COPY ./start_script.sh /usr/bin/start_script.sh
-RUN chmod +x /usr/bin/start_script.sh
-CMD ["/usr/bin/start_script.sh"]
+COPY live_data_server app
+RUN mkdir ./static

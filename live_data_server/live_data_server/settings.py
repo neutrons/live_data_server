@@ -22,15 +22,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e'
 
-TIME_ZONE = 'America/New_York'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = bool(os.environ.get("APP_DEBUG", False))
 #CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = ['.ornl.gov', '.sns.gov', 'localhost', '127.0.0.1']
  
-ALLOWED_HOSTS = ['livedata.sns.gov']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'livedata.sns.gov']
 
 
 # Application definition
@@ -129,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -143,6 +141,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/var/www/livedata/static/'
+
+# Add secret key to settings only if there's a non-empty environment variable with same name
+if "LIVE_PLOT_SECRET_KEY" in os.environ:
+    secret_key = os.environ.get("LIVE_PLOT_SECRET_KEY")
+    if bool(secret_key):
+        LIVE_PLOT_SECRET_KEY = os.environ.get("LIVE_PLOT_SECRET_KEY")
 
 # Import local settings if available
 try:

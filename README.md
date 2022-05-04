@@ -1,23 +1,52 @@
 ## live_data_server
 Data server for data plots
 
-## Containerization
 
-The provided Dockerfile can be used to generated an image that contains the application (un-initialized state).
-To deploy this application locally for development, there are two options:
+## Contributing
 
-- Use the provided `docker-compose.yml` file to start a local private docker network where a postgresql database and the livedata application is served.
-- Add the image to other `docker-compose.yml` where live-data-server is needed
-  - make sure the other `docker-compose.yml` has a working database instance running before the live-data-server
-  - make sure modify the database instance script to include the creation of the table needed by live-data-server
-  - make sure passing the database related environment variables into the live-data-server container.
+Create a conda environment `livedata`, containing all the dependencies 
+```python
+conda env create -f environment.yml
+conda activate livedata
+```
 
+### Containerization
+
+To deploy this application locally for development you will need to assign values to the following secrets
+as environment variables defined in the shell's environment:
+```bash
+      DATABASE_NAME
+      DATABASE_USER
+      DATABASE_PASS
+      DATABASE_HOST
+      DATABASE_PORT
+      LIVE_PLOT_SECRET_KEY
+```
+It is recommended to save these variables into an `.envrc` file which can be managed by
+[envdir](https://direnv.net/).
+
+After the secrets are set, type in the terminal shell:
+```bash
+make local/docker/up
+```
+This command will copy `config/docker-compose.envlocal.yml` into `docker-compose.yml` before composing
+all the services.
+
+Type `make help` to learn about other macros available as make targets.
+For instance, `make docker/pruneall` will stop all containers, then remove
+all containers, images, networks, and volumes.
 
 ## Test & Verification
 
-There is no direct verification of functionality for the containerized live-data-server container due to its design.
-You can verify that the service is running by going to `localhost:9999/admin` after starting the application with `docker-compose up`.
-The log info should tell you that the live-data-server is properly initializing the database as well as the 400 error when trying to access `localhost:9999/admin`.
+After starting the services with `make local/docker/up`, run the test that will post and get data:
+
+```bash
+DJANGO_SUPERUSER_USERNAME=***** DJANGO_SUPERUSER_PASSWORD=***** pytest tests/test_post.py
+```
+
+Environment variables `DJANGO_SUPERUSER_USERNAME` and `DJANGO_SUPERUSER_PASSWORD` are defined in
+file `docker-compose.envlocal.yml`. You need to either pass these variables with the correct values or have
+them exported to the shell where `pytest` is to be run.
 
 ## Deployment to the Test Environment
 - Repository managing the provision for deployment:
