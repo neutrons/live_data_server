@@ -1,13 +1,13 @@
-name: livedata
+name: junk
 channels:
   - conda-forge
 dependencies:
   - python=2.7
   - pip
-  - postgres=9.5.3
+  - postgresql
   - pip:
-    -Django==1.9.12
-    -django-cors-headers==1.3.1
-    -psycopg2==2.6.2
-    -gunicorn==19.10.0
-    -pytest==4.6.11
+    - Django==1.9.12
+    - django-cors-headers==1.3.1
+    - psycopg2==2.6.2
+    - gunicorn==19.10.0
+    - pytest==4.6.11
