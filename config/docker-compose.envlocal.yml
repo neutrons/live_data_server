@@ -25,6 +25,9 @@ services:
       dockerfile: Dockerfile
       network: host
     environment:
+      APP_DEBUG: 1  # 0 for False, otherwise will evaluate to True
+      DJANGO_SUPERUSER_USERNAME: ${DATABASE_USER}
+      DJANGO_SUPERUSER_PASSWORD: ${DATABASE_PASS}
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASS: ${DATABASE_PASS}

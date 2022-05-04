@@ -18,7 +18,7 @@ python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 
 # create superuser
-python manage.py createsuperuser --username "${DATABASE_USER}" --email "${DATABASE_USER}@localhost" --noinput
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('${DJANGO_SUPERUSER_USERNAME}', '${DJANGO_SUPERUSER_USERNAME}@example.com', '${DJANGO_SUPERUSER_PASSWORD}')" | python manage.py shell
 
 # Create the webcache
 python manage.py createcachetable webcache
