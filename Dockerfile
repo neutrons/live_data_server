@@ -12,12 +12,16 @@ RUN yum install -y \
     python-pip \
     postgresql \
     postgresql-devel \
-    python-devel
+    python-devel \
+    vim
 
 WORKDIR /var/www/livedata
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+
+COPY requirements_dev.txt .
+RUN pip install -r requirements_dev.txt
 
 COPY live_data_server app
 RUN mkdir ./static
