@@ -12,7 +12,7 @@ conda activate livedata
 
 ### Containerization
 
-To deploy this application locally for development you will need to have the following secrets
+To deploy this application locally for development you will need to assign values to the following secrets
 as environment variables defined in the shell's environment:
 ```bash
       DATABASE_NAME
@@ -22,7 +22,6 @@ as environment variables defined in the shell's environment:
       DATABASE_PORT
       LIVE_PLOT_SECRET_KEY
 ```
-You can contact a member of the development team to obtain sensible values for these variables.
 It is recommended to save these variables into an `.envrc` file which can be managed by
 [envdir](https://direnv.net/).
 
@@ -39,12 +38,15 @@ all containers, images, networks, and volumes.
 
 ## Test & Verification
 
-There is no direct verification of functionality for the containerized live-data-server
-container due to its design.
-You can verify that the service is running by going to `localhost:9999/admin` after
-starting the application with `docker-compose up`.
-The log info should tell you that the live-data-server is properly initializing the database
-as well as the 400 error when trying to access `localhost:9999/admin`.
+After starting the services with `make local/docker/up`, run the test that will post and get data:
+
+```bash
+DJANGO_SUPERUSER_USERNAME=***** DJANGO_SUPERUSER_PASSWORD=***** pytest tests/test_post.py
+```
+
+Environment variables `DJANGO_SUPERUSER_USERNAME` and `DJANGO_SUPERUSER_PASSWORD` are defined in
+file `docker-compose.envlocal.yml`. You need to either pass these variables with the correct values or have
+them exported to the shell where `pytest` is to be run.
 
 ## Deployment to the Test Environment
 - Repository managing the provision for deployment:
