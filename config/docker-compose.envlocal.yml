@@ -9,10 +9,6 @@ services:
       - "443:443"
     volumes:
       - ./config/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
-      - ./config/nginx/docker-entrypoint.sh:/docker-entrypoint.d/docker-entrypoint.sh
-      - ./config/nginx/wait-for-it.sh:/usr/bin/wait-for-it.sh
-    #depends_on:
-    #  - livedata
     depends_on:
       livedata:
         condition: service_healthy
