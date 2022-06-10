@@ -13,7 +13,8 @@ RUN yum install -y \
     postgresql \
     postgresql-devel \
     python-devel \
-    vim
+    vim \
+    wget
 
 WORKDIR /var/www/livedata
 
