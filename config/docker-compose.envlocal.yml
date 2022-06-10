@@ -2,22 +2,16 @@ version: '3.8'
 
 services:
 
-  db:
-    # do not upgrade to version > 9.6.23 unless you also upgrade livedata image
-    image: code.ornl.gov:4567/rse/images/postgres:9.6.23
-    environment:
-      POSTGRES_DB: ${DATABASE_NAME}
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASS}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  nginx:
+    image: code.ornl.gov:4567/rse/images/nginx:1.21.1
     ports:
-      - "${DATABASE_PORT}:${DATABASE_PORT}"
+      - "80:80"
+      - "443:443"
     volumes:
-      - db-data:/var/lib/postgresql/data/
+      - ./config/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      livedata:
+        condition: service_healthy
 
   livedata:
     build:
@@ -34,24 +28,33 @@ services:
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
       LIVE_PLOT_SECRET_KEY: ${LIVE_PLOT_SECRET_KEY}
-    volumes:
-      - ./docker-entrypoint.sh:/usr/bin/docker-entrypoint.sh
     command: /usr/bin/docker-entrypoint.sh
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8000/admin || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
     depends_on:
       db:
-        condition: "service_healthy"
+        condition: service_healthy
 
-  nginx:
-    image: code.ornl.gov:4567/rse/images/nginx:1.21.1
+  db:
+    # do not upgrade to version > 9.6.23 unless you also upgrade livedata image
+    image: code.ornl.gov:4567/rse/images/postgres:9.6.23
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
-      - "80:80"
-      - "443:443"
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
     volumes:
-      - ./config/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
-      - ./config/nginx/docker-entrypoint.sh:/docker-entrypoint.d/docker-entrypoint.sh
-      - ./config/nginx/wait-for-it.sh:/usr/bin/wait-for-it.sh
-    depends_on:
-      - livedata
+      - db-data:/var/lib/postgresql/data/
 
 volumes:
   db-data:

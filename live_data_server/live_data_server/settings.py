@@ -28,7 +28,7 @@ DEBUG = bool(os.environ.get("APP_DEBUG", False))
 #SESSION_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = ['.ornl.gov', '.sns.gov', 'localhost', '127.0.0.1']
  
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'livedata.sns.gov']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testfixture02-test.ornl.gov', 'livedata.sns.gov']
 
 
 # Application definition
