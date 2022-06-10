@@ -16,6 +16,8 @@ RUN yum install -y \
     vim \
     wget
 
+COPY docker-entrypoint.sh /usr/bin/
+
 WORKDIR /var/www/livedata
 
 COPY requirements.txt .
