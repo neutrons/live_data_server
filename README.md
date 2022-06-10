@@ -41,7 +41,7 @@ all containers, images, networks, and volumes.
 After starting the services with `make local/docker/up`, run the test that will post and get data:
 
 ```bash
-DJANGO_SUPERUSER_USERNAME=***** DJANGO_SUPERUSER_PASSWORD=***** pytest tests/test_post.py
+DJANGO_SUPERUSER_USERNAME=***** DJANGO_SUPERUSER_PASSWORD=***** pytest tests/test_post_get.py
 ```
 
 Environment variables `DJANGO_SUPERUSER_USERNAME` and `DJANGO_SUPERUSER_PASSWORD` are defined in
