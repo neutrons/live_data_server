@@ -8,12 +8,15 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - web-static:/var/www/livedata/static
       - ./config/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
     depends_on:
       livedata:
         condition: service_healthy
 
   livedata:
+    expose:
+      - "8000"
     build:
       context: .
       dockerfile: Dockerfile
@@ -29,6 +32,8 @@ services:
       DATABASE_PORT: ${DATABASE_PORT}
       LIVE_PLOT_SECRET_KEY: ${LIVE_PLOT_SECRET_KEY}
     command: /usr/bin/docker-entrypoint.sh
+    volumes:
+      - web-static:/var/www/livedata/static
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8000/admin || exit 1
       interval: 60s
@@ -57,4 +62,5 @@ services:
       - db-data:/var/lib/postgresql/data/
 
 volumes:
+  web-static:
   db-data:
