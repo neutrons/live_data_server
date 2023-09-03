@@ -53,3 +53,13 @@ them exported to the shell where `pytest` is to be run.
   + hardware and networking for deployment: https://code.ornl.gov/sns-hfir-scse/infrastructure/neutrons-test-environment/-/blob/main/terraform/servers.tf#L85-97
   + configuration independent of source code changes: https://code.ornl.gov/sns-hfir-scse/infrastructure/neutrons-test-environment/-/blob/main/ansible/testfixture02-test.yaml
 - Repository managing deployment of the source to the provisioned hardware: https://code.ornl.gov/sns-hfir-scse/deployments/livedata-deploy
+
+
+## Building the Documentation
+Additional documentation is available in the `docs` directory. To build the documentation in your local machine,
+run the following command from within directory `docs/`:
+```bash
+make html
+```
+The documentation will be built in the `docs/_build/html` directory. To view the documentation,
+open the `docs/_build/html/index.html` file in a web browser.
