@@ -1,5 +1,5 @@
 Welcome to LIVE DATA SERVER's documentation!
-====================================
+============================================
 
 .. toctree::
    :maxdepth: 2
@@ -11,5 +11,6 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
+
+.. uncomment this once we include the API in the docs * :ref:`modindex`
