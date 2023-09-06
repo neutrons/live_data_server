@@ -1,5 +1,6 @@
+=============================================
 Configure for Local Debugging and Development
----------------------------------------------
+=============================================
 
 If you just follow the steps in the readme then you will be able to start the service
 but will not be able to interact with the api at all beyond receiving 400 errors.
@@ -8,9 +9,9 @@ In order to enable the api you will need to tweak some config settings.
 (Maybe in the future it would be worth including these as dev versions)
 
 docker-compose.yml
-******************
+------------------
 
-.. code-block:: yml
+.. code-block:: yaml
 
     # replace this
     image: live_data:dev
@@ -24,7 +25,7 @@ This will build from our local source instead of pulling an image online.
 
 
 Settings.py
-***********
+-----------
 
 .. code-block:: python
 
