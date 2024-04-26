@@ -7,7 +7,7 @@ import json
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.cache import cache_page
 from django.contrib.auth import login, authenticate
@@ -22,7 +22,7 @@ def _check_credentials(request):
         Internal utility method to check whether a user has access to a view
     """
     # If we don't allow guests but the user is authenticated, return the function
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return True
 
 
@@ -34,13 +34,13 @@ def check_credentials(fn):
         """
             Authentication process
         """
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return fn(request, *args, **kws)
         if request.method == 'POST':
             username = request.POST["username"]
             password = request.POST["password"]
             request_user = authenticate(username=username, password=password)
-            if request_user is not None and not request_user.is_anonymous():
+            if request_user is not None and not request_user.is_anonymous:
                 login(request, request_user)
                 return fn(request, *args, **kws)
         else:
@@ -113,7 +113,7 @@ def _store(request, instrument, run_id=None, as_user=False):
         @param run_id: run number
         @param as_user: if True, we will store as user data
     """
-    if request.user.is_authenticated() and 'file' in request.FILES:
+    if request.user.is_authenticated and 'file' in request.FILES:
         raw_data = request.FILES['file'].read()
         data_type_default = PlotData.get_data_type_from_data(raw_data)
         data_type = request.POST.get('data_type', default=data_type_default)
@@ -150,7 +150,7 @@ def get_data_list(request, instrument):
     """
         Get a list of user data
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         instrument_object = get_object_or_404(Instrument, name=instrument.lower())
         data_list = []
         for item in DataRun.objects.filter(instrument=instrument_object):

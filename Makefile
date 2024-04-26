@@ -1,7 +1,7 @@
 prefix := /var/www/livedata
 app_dir := live_data_server
-DJANGO_COMPATIBLE:=$(shell python -c "import django;t=0 if django.VERSION[1]<9 else 1; print t")
-DJANGO_VERSION:=$(shell python -c "import django;print django.__version__")
+DJANGO_COMPATIBLE:=$(shell python -c "import django;t=0 if django.VERSION[1]<9 else 1; print(t)")
+DJANGO_VERSION:=$(shell python -c "import django;print(django.__version__)")
 
 # command to run docker compose. change this to be what you have installed
 # this can be overriden on the command line

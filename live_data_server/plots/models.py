@@ -30,7 +30,7 @@ class DataRun(models.Model):
     # Optional free-form run identifier
     run_id = models.TextField()
 
-    instrument = models.ForeignKey(Instrument)
+    instrument = models.ForeignKey(Instrument, on_delete=models.deletion.CASCADE)
     created_on = models.DateTimeField('Timestamp', auto_now_add=True)
 
     def __unicode__(self):
@@ -42,7 +42,7 @@ class PlotData(models.Model):
         Table of plot data. This data can either be json or html
     """
     ## DataRun this run status belongs to
-    data_run = models.ForeignKey(DataRun)
+    data_run = models.ForeignKey(DataRun, on_delete=models.deletion.CASCADE)
     ## Data type:
     ##    type = 100 for live data, 0 static reduced.
     ##    type += 1 for HTML, 0 for JSON
@@ -80,7 +80,7 @@ class PlotData(models.Model):
             Inspect the data to guess what type it is.
             @param data: block of text to store
         """
-        if data.startswith('<div'):
+        if data.startswith(b'<div'):
             return DATA_TYPES['html']
         return DATA_TYPES['json']
 
