@@ -1,30 +1,14 @@
-FROM centos:centos7
+FROM continuumio/miniconda3:23.10.0-1
 
-RUN yum update -y
-RUN yum install -y \
-    which \
-    epel-release
-RUN yum install -y \
-    gcc \
-    make \
-    httpd \
-    mod_wsgi \
-    python-pip \
-    postgresql \
-    postgresql-devel \
-    python-devel \
-    vim \
-    wget
-
-COPY docker-entrypoint.sh /usr/bin/
+COPY environment.yml .
+RUN conda env create
 
 WORKDIR /var/www/livedata
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY requirements_dev.txt .
-RUN pip install -r requirements_dev.txt
+COPY docker-entrypoint.sh /usr/bin/
 
 COPY live_data_server app
 RUN mkdir ./static
+
+RUN chmod +x /usr/bin/docker-entrypoint.sh
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "livedata", "/usr/bin/docker-entrypoint.sh"]
