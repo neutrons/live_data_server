@@ -37,8 +37,8 @@ def check_credentials(fn):
         if request.user.is_authenticated:
             return fn(request, *args, **kws)
         if request.method == 'POST':
-            username = request.POST["username"]
-            password = request.POST["password"]
+            username = request.POST.get("username")
+            password = request.POST.get("password")
             request_user = authenticate(username=username, password=password)
             if request_user is not None and not request_user.is_anonymous:
                 login(request, request_user)

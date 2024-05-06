@@ -10,6 +10,7 @@ from django.conf import settings
 from plots.models import Instrument, DataRun, PlotData
 import hashlib
 
+
 def generate_key(instrument, run_id):
     """
         Generate a secret key for a run on a given instrument
@@ -23,8 +24,9 @@ def generate_key(instrument, run_id):
         return None
     else:
         h = hashlib.sha1()
-        h.update("%s%s%s" % (instrument.upper(), secret_key, run_id))
+        h.update(("%s%s%s" % (instrument.upper(), secret_key, run_id)).encode("utf-8"))
         return h.hexdigest()
+
 
 def check_key(fn):
     """
@@ -46,9 +48,10 @@ def check_key(fn):
                 return fn(request, instrument, run_id)
             return HttpResponse(status=401)
         except:
-            logging.error("[%s]: %s", request.path, sys.exc_value)
+            logging.error("[%s]: %s" % (request.path, sys.exc_info()[1]))
             return HttpResponse(status=500)
     return request_processor
+
 
 def get_or_create_run(instrument, run_id, create=True):
     """
@@ -99,6 +102,7 @@ def get_plot_data(instrument, run_id, data_type=None):
             return plot
     return None
 
+
 def store_user_data(user, data_id, data, data_type):
     """
         Store plot data and associate it to a user identifier (a name, not
@@ -141,6 +145,7 @@ def store_user_data(user, data_id, data, data_type):
     plot_data.data_type = data_type
     plot_data.timestamp = timezone.now()
     plot_data.save()
+
 
 def store_plot_data(instrument, run_id, data, data_type):
     """
