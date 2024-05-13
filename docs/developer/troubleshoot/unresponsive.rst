@@ -35,8 +35,10 @@ served now, then it's a problem of the secure connection.
 **Diagnostics: upstream firewall policy**
 
 If the prod or test servers are hosted on ORNL cloud, ensure that unsolicited incoming requests on ports 80 and 443 are allowed in the upstream firewall.
-Navigate to https://orc-open.ornl.gov and select the security group rules for the hosted instance.
-Check to see that Ingress ports 80(HTTP) and 443(HTTPS) are allowed for 0.0.0.0/0 all IPv4 hosts.  The following screenshot depicts the desired configuration.
+Login to https://orc-open.ornl.gov, click on "Instances" and select "testfixture02-test". Verify under "Security Groups"
+that security group "webserver" is included (see image below), which as rules to allow requests on ports 80 and 443.
+If the security group "webserver" is absent, click in the "Interfaces" tab, then click in "Edit Security Groups",
+then click the "+" sign next to "webserver"
 
 .. image:: /developer/media/forward_rule_443.GIF
     :width: 800px
