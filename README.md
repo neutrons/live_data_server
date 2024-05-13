@@ -1,6 +1,10 @@
 ## live_data_server
 Data server for data plots
 
+<!-- Badges -->
+[![Documentation Status](https://readthedocs.org/projects/livedata-ornl/badge/?version=latest)](https://livedata-ornl.readthedocs.io/en/latest/?badge=latest)
+
+Developer documentation at https://livedata-ornl.readthedocs.io/en/latest/
 
 ## Contributing
 
