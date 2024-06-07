@@ -80,7 +80,7 @@ class PlotData(models.Model):
             Inspect the data to guess what type it is.
             @param data: block of text to store
         """
-        if data.startswith(b'<div'):
+        if data.startswith('<div'):
             return DATA_TYPES['html']
         return DATA_TYPES['json']
 
