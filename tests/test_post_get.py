@@ -68,6 +68,7 @@ def test_get_request(data_server):
     url = f"{base_url}?key={_generate_key(instrument, run_number)}"
     http_request = requests.get(url)
     assert http_request.status_code == http_ok
+    assert http_request.text == files["file"]
 
     # test GET request - no key
     # TODO: this should return 401 unauthorized

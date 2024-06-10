@@ -114,7 +114,7 @@ def _store(request, instrument, run_id=None, as_user=False):
         @param as_user: if True, we will store as user data
     """
     if request.user.is_authenticated and 'file' in request.FILES:
-        raw_data = request.FILES['file'].read()
+        raw_data = request.FILES['file'].read().decode('utf-8')
         data_type_default = PlotData.get_data_type_from_data(raw_data)
         data_type = request.POST.get('data_type', default=data_type_default)
         if as_user:
