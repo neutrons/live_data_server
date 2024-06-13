@@ -13,15 +13,15 @@ cd /var/www/livedata/app
 python manage.py collectstatic --noinput
 
 # migrate django models
-python manage.py flush --no-input
 python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 
 # create superuser
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('${DJANGO_SUPERUSER_USERNAME}', '${DJANGO_SUPERUSER_USERNAME}@example.com', '${DJANGO_SUPERUSER_PASSWORD}')" | python manage.py shell
+#echo "from django.contrib.auth.models import User; User.objects.create_superuser('${DJANGO_SUPERUSER_USERNAME}', '${DJANGO_SUPERUSER_USERNAME}@example.com', '${DJANGO_SUPERUSER_PASSWORD}')" | python manage.py shell
 
 # Create the webcache
 python manage.py createcachetable webcache
+python manage.py ensure_adminuser --username=${DJANGO_SUPERUSER_USERNAME} --email='workflow@example.com' --password=${DJANGO_SUPERUSER_USERNAME}
 
 # run application
 gunicorn live_data_server.wsgi:application -w 2 -b :8000 --reload
