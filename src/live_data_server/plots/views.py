@@ -1,25 +1,29 @@
-#pylint: disable=unused-argument, invalid-name
+# pylint: disable=unused-argument, invalid-name
 """
-    Definition of views
+Definition of views
 """
-import logging
-import json
-from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.urls import reverse
-from django.core.exceptions import PermissionDenied
-from django.views.decorators.cache import cache_page
-from django.contrib.auth import login, authenticate
-from django.utils import dateformat, timezone
-from django.conf import settings
 
-from plots.models import PlotData, Instrument, DataRun
+import json
+import logging
+
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
+from django.shortcuts import get_object_or_404, render_to_response
+from django.urls import reverse
+from django.utils import dateformat, timezone
+from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
+
+from plots.models import DataRun, Instrument, PlotData
+
 from . import view_util
+
 
 def _check_credentials(request):
     """
-        Internal utility method to check whether a user has access to a view
+    Internal utility method to check whether a user has access to a view
     """
     # If we don't allow guests but the user is authenticated, return the function
     if request.user.is_authenticated:
@@ -28,15 +32,16 @@ def _check_credentials(request):
 
 def check_credentials(fn):
     """
-        Function decorator to authenticate a request
+    Function decorator to authenticate a request
     """
+
     def request_processor(request, *args, **kws):
         """
-            Authentication process
+        Authentication process
         """
         if request.user.is_authenticated:
             return fn(request, *args, **kws)
-        if request.method == 'POST':
+        if request.method == "POST":
             username = request.POST.get("username")
             password = request.POST.get("password")
             request_user = authenticate(username=username, password=password)
@@ -45,36 +50,40 @@ def check_credentials(fn):
                 return fn(request, *args, **kws)
         else:
             raise PermissionDenied
+
     return request_processor
+
 
 def live_plot(request, instrument, run_id):
     """
-        Test view for live plotting.
-        @param instrument: instrument name
-        @param run_id: run number
+    Test view for live plotting.
+    @param instrument: instrument name
+    @param run_id: run number
     """
-    data_type_default = PlotData.get_data_type_from_string('html')
-    data_type = request.GET.get('data_type', default=data_type_default)
-    update_url = reverse('plots:update_as_%s' % PlotData.data_type_as_string(data_type),
-                         kwargs={'instrument': instrument, 'run_id': run_id})
+    data_type_default = PlotData.get_data_type_from_string("html")
+    data_type = request.GET.get("data_type", default=data_type_default)
+    update_url = reverse(
+        "plots:update_as_%s" % PlotData.data_type_as_string(data_type),
+        kwargs={"instrument": instrument, "run_id": run_id},
+    )
     client_key = view_util.generate_key(instrument, run_id)
     if client_key is not None:
         update_url += "?key=%s" % client_key
     template_values = {}
-    template_values['data_type'] = data_type
-    template_values['update_url'] = update_url
-    return render_to_response('plots/live_plot.html',
-                              template_values)
+    template_values["data_type"] = data_type
+    template_values["update_url"] = update_url
+    return render_to_response("plots/live_plot.html", template_values)
+
 
 @view_util.check_key
 @cache_page(15)
-def update_as_json(request, instrument, run_id):
+def update_as_json(request, instrument, run_id):  # noqa: ARG001
     """
-        Ajax call to get JSON data
-        @param instrument: instrument name
-        @param run_id: run number
+    Ajax call to get JSON data
+    @param instrument: instrument name
+    @param run_id: run number
     """
-    data_type = PlotData.get_data_type_from_string('json')
+    data_type = PlotData.get_data_type_from_string("json")
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
     if plot_data is None:
@@ -85,15 +94,16 @@ def update_as_json(request, instrument, run_id):
     json_data = json.loads(plot_data.data)
     return JsonResponse(json_data, safe=False)
 
+
 @view_util.check_key
 @cache_page(15)
-def update_as_html(request, instrument, run_id):
+def update_as_html(request, instrument, run_id):  # noqa: ARG001
     """
-        Ajax call to get plot data as an html <div>
-        @param instrument: instrument name
-        @param run_id: run number
+    Ajax call to get plot data as an html <div>
+    @param instrument: instrument name
+    @param run_id: run number
     """
-    data_type = PlotData.get_data_type_from_string('html')
+    data_type = PlotData.get_data_type_from_string("html")
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
     if plot_data is None:
@@ -102,23 +112,24 @@ def update_as_html(request, instrument, run_id):
         return HttpResponseNotFound(error_msg)
 
     response = HttpResponse(str(plot_data.data), content_type="text/html")
-    response['Content-Length'] = len(response.content)
+    response["Content-Length"] = len(response.content)
     return response
+
 
 @check_credentials
 def _store(request, instrument, run_id=None, as_user=False):
     """
-        Store plot data
-        @param instrument: instrument name or user name
-        @param run_id: run number
-        @param as_user: if True, we will store as user data
+    Store plot data
+    @param instrument: instrument name or user name
+    @param run_id: run number
+    @param as_user: if True, we will store as user data
     """
-    if request.user.is_authenticated and 'file' in request.FILES:
-        raw_data = request.FILES['file'].read().decode('utf-8')
+    if request.user.is_authenticated and "file" in request.FILES:
+        raw_data = request.FILES["file"].read().decode("utf-8")
         data_type_default = PlotData.get_data_type_from_data(raw_data)
-        data_type = request.POST.get('data_type', default=data_type_default)
+        data_type = request.POST.get("data_type", default=data_type_default)
         if as_user:
-            data_id = request.POST.get('data_id', default='')
+            data_id = request.POST.get("data_id", default="")
             view_util.store_user_data(instrument, data_id, raw_data, data_type)
         else:
             view_util.store_plot_data(instrument, run_id, raw_data, data_type)
@@ -127,28 +138,31 @@ def _store(request, instrument, run_id=None, as_user=False):
 
     return HttpResponse()
 
+
 @csrf_exempt
 def upload_plot_data(request, instrument, run_id):
     """
-        Upload plot data
-        @param instrument: instrument name
-        @param run_id: run number
+    Upload plot data
+    @param instrument: instrument name
+    @param run_id: run number
     """
     return _store(request, instrument, run_id, as_user=False)
+
 
 @csrf_exempt
 def upload_user_data(request, user):
     """
-        Upload plot data
-        @param user: user identifier to use
+    Upload plot data
+    @param user: user identifier to use
     """
     return _store(request, user, as_user=True)
+
 
 @csrf_exempt
 @check_credentials
 def get_data_list(request, instrument):
     """
-        Get a list of user data
+    Get a list of user data
     """
     if request.user.is_authenticated:
         instrument_object = get_object_or_404(Instrument, name=instrument.lower())
@@ -156,11 +170,15 @@ def get_data_list(request, instrument):
         for item in DataRun.objects.filter(instrument=instrument_object):
             localtime = timezone.localtime(item.created_on)
             df = dateformat.DateFormat(localtime)
-            data_list.append(dict(id=item.id,
-                                  run_number=str(item.run_number),
-                                  run_id=item.run_id,
-                                  timestamp=item.created_on.isoformat(),
-                                  created_on=df.format(settings.DATETIME_FORMAT)))
+            data_list.append(
+                dict(
+                    id=item.id,
+                    run_number=str(item.run_number),
+                    run_id=item.run_id,
+                    timestamp=item.created_on.isoformat(),
+                    created_on=df.format(settings.DATETIME_FORMAT),
+                )
+            )
         response = HttpResponse(json.dumps(data_list), content_type="application/json")
         return response
     else:

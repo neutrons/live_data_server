@@ -1,21 +1,24 @@
-#pylint: disable=invalid-name, bare-except
+# pylint: disable=invalid-name, bare-except
 """
-    Utility functions to support views.
+Utility functions to support views.
 """
-import sys
-import logging
-from django.utils import timezone
-from django.http import HttpResponse
-from django.conf import settings
-from plots.models import Instrument, DataRun, PlotData
+
 import hashlib
+import logging
+import sys
+
+from django.conf import settings
+from django.http import HttpResponse
+from django.utils import timezone
+
+from plots.models import DataRun, Instrument, PlotData
 
 
 def generate_key(instrument, run_id):
     """
-        Generate a secret key for a run on a given instrument
-        @param instrument: instrument name
-        @param run_id: run number
+    Generate a secret key for a run on a given instrument
+    @param instrument: instrument name
+    @param run_id: run number
     """
     if not hasattr(settings, "LIVE_PLOT_SECRET_KEY"):
         return None
@@ -30,35 +33,37 @@ def generate_key(instrument, run_id):
 
 def check_key(fn):
     """
-        Function decorator to check whether a user is allowed
-        to see a view.
+    Function decorator to check whether a user is allowed
+    to see a view.
 
-        Usually used for AJAX calls.
+    Usually used for AJAX calls.
     """
+
     def request_processor(request, instrument, run_id):
         """
-            Decorator function
+        Decorator function
         """
         try:
-            client_key = request.GET.get('key', None)
+            client_key = request.GET.get("key", None)
             server_key = generate_key(instrument, run_id)
             # Temporary bypass during testing
             # Remove client_key is None condition when we deploy
             if client_key is None or server_key is None or client_key == server_key:
                 return fn(request, instrument, run_id)
             return HttpResponse(status=401)
-        except:
+        except:  # noqa: E722
             logging.error("[%s]: %s" % (request.path, sys.exc_info()[1]))
             return HttpResponse(status=500)
+
     return request_processor
 
 
 def get_or_create_run(instrument, run_id, create=True):
     """
-        Retrieve a run entry, or create it.
-        @param instrument: instrument name
-        @param run_id: run number
-        @param create: if True, missing entries will be created
+    Retrieve a run entry, or create it.
+    @param instrument: instrument name
+    @param run_id: run number
+    @param create: if True, missing entries will be created
     """
 
     # Get or create the instrument
@@ -86,11 +91,12 @@ def get_or_create_run(instrument, run_id, create=True):
 
     return run_obj
 
+
 def get_plot_data(instrument, run_id, data_type=None):
     """
-        Get plot data for requested instrument and run number
-        @param instrument: instrument name
-        @param run_id: run number
+    Get plot data for requested instrument and run number
+    @param instrument: instrument name
+    @param run_id: run number
     """
     run_obj = get_or_create_run(instrument, run_id, create=False)
     plot_data_list = PlotData.objects.filter(data_run=run_obj)
@@ -105,8 +111,8 @@ def get_plot_data(instrument, run_id, data_type=None):
 
 def store_user_data(user, data_id, data, data_type):
     """
-        Store plot data and associate it to a user identifier (a name, not
-        an actual user since users don't log in to this system).
+    Store plot data and associate it to a user identifier (a name, not
+    an actual user since users don't log in to this system).
     """
     # Get or create the instrument
     instrument_list = Instrument.objects.filter(name=user.lower())
@@ -119,7 +125,7 @@ def store_user_data(user, data_id, data, data_type):
 
     run_list = DataRun.objects.filter(instrument=instrument_obj, run_id=data_id)
     if len(run_list) > 0:
-        run_obj = run_list.latest('created_on')
+        run_obj = run_list.latest("created_on")
     else:
         run_obj = DataRun()
         run_obj.instrument = instrument_obj
@@ -149,11 +155,11 @@ def store_user_data(user, data_id, data, data_type):
 
 def store_plot_data(instrument, run_id, data, data_type):
     """
-        Store plot data
-        @param instrument: instrument name
-        @param run_id: run number
-        @param data: data to be stored
-        @param data_type: requested data type
+    Store plot data
+    @param instrument: instrument name
+    @param run_id: run number
+    @param data: data to be stored
+    @param data_type: requested data type
     """
     run_object = get_or_create_run(instrument, run_id)
 

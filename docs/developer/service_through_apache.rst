@@ -13,6 +13,3 @@ Apache HTTP Server.
 The `Apache configuration file <https://github.com/neutrons/live_data_server/blob/78ef6ad9b237274ac63c69b99d334657ac373633/apache/apache_django_wsgi.conf>`_
 is located at ``/etc/httpd/conf.d/apache_django_wsgi.conf``, and the application is located in
 ``/var/www/livedata/app``.
-
-
-

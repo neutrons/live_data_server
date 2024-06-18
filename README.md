@@ -8,7 +8,7 @@ Developer documentation at https://livedata-ornl.readthedocs.io/en/latest/
 
 ## Contributing
 
-Create a conda environment `livedata`, containing all the dependencies 
+Create a conda environment `livedata`, containing all the dependencies
 ```python
 conda env create -f environment.yml
 conda activate livedata

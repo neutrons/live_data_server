@@ -12,10 +12,10 @@ class Command(BaseCommand):
         parser.add_argument("--email", help="Admin's email")
         parser.add_argument("--password", help="Admin's password")
 
-    def handle(self, *args, **options):
-        User = get_user_model()
-        if not User.objects.filter(username=options["username"]).exists():
-            User.objects.create_superuser(
+    def handle(self, *args, **options):  # noqa: ARG002
+        user = get_user_model()
+        if not user.objects.filter(username=options["username"]).exists():
+            user.objects.create_superuser(
                 username=options["username"],
                 email=options["email"],
                 password=options["password"],

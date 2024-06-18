@@ -41,7 +41,7 @@ Changing it to a wildcard lets us ping it as local host and not get a 400 error.
 
 
 You should now be able to interact with the api on `localhost:9999` but there's a little more.
-You need to add a user that you can use for your post requests, 
+You need to add a user that you can use for your post requests,
 
 .. code-block:: bash
 
@@ -53,7 +53,7 @@ You need to add a user that you can use for your post requests,
 I personally recommend using `Postman <https://www.postman.com/>`_ when interacting with the api.
 If you do, set the request body to `form-data`!
 
-Some relevant form-data field keys: 
+Some relevant form-data field keys:
 
 #. file
 #. username
