@@ -7,7 +7,7 @@ WORKDIR /var/www/livedata
 
 COPY docker-entrypoint.sh /usr/bin/
 
-COPY live_data_server app
+COPY src/live_data_server app
 RUN mkdir ./static
 
 RUN chmod +x /usr/bin/docker-entrypoint.sh
