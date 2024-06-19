@@ -1,0 +1,61 @@
+services:
+
+  nginx:
+    image: nginx:1.21.1
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - web-static:/var/www/livedata/static
+      - ./config/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      livedata:
+        condition: service_healthy
+
+  livedata:
+    build:
+      context: .
+      dockerfile: Dockerfile.coverage
+      network: host
+    environment:
+      APP_DEBUG: 1  # 0 for False, otherwise will evaluate to True
+      DJANGO_SUPERUSER_USERNAME: ${DATABASE_USER}
+      DJANGO_SUPERUSER_PASSWORD: ${DATABASE_PASS}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASS: ${DATABASE_PASS}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      LIVE_PLOT_SECRET_KEY: ${LIVE_PLOT_SECRET_KEY}
+    command: /usr/bin/docker-entrypoint.sh
+    volumes:
+      - web-static:/var/www/livedata/static
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8000/admin || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    # do not upgrade to version > 9.6.23 unless you also upgrade livedata image
+    image: postgres:9.6.23
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+
+volumes:
+  web-static:

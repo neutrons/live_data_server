@@ -17,3 +17,4 @@ dependencies:
   - toml
   - requests<2.31 # can remove this condition once we allow newer versions of openssl
   - pre-commit
+  - coverage
