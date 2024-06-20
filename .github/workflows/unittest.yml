@@ -23,8 +23,8 @@ jobs:
       DJANGO_SUPERUSER_USERNAME: livedatauser
       DJANGO_SUPERUSER_PASSWORD: livedatapass
     steps:
-      - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           channels: conda-forge,defaults
