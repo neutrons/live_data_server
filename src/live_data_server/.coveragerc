@@ -1,0 +1,4 @@
+[run]
+source=live_data_server,plots
+parallel=True
+relative_files=True

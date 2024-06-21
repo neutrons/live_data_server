@@ -22,6 +22,7 @@ jobs:
       LIVE_PLOT_SECRET_KEY: "1234_live_data_server"
       DJANGO_SUPERUSER_USERNAME: livedatauser
       DJANGO_SUPERUSER_PASSWORD: livedatapass
+      COVERAGE_RUN: coverage run -m
     steps:
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v3
@@ -34,7 +35,7 @@ jobs:
           cache-downloads-key: ${{ runner.os }}-downloads-${{ hashFiles('**/environment.yml') }}
       - name: Start docker containers
         run: |
-          cp ./config/docker-compose.coverage.yml docker-compose.yml
+          cp ./config/docker-compose.envlocal.yml docker-compose.yml
           docker-compose up --build -d
       - name: Sleep, wait for containers to start up
         run: sleep 30

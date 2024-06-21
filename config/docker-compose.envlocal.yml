@@ -27,6 +27,7 @@ services:
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
       LIVE_PLOT_SECRET_KEY: ${LIVE_PLOT_SECRET_KEY}
+      COVERAGE_RUN: ${COVERAGE_RUN}
     command: /usr/bin/docker-entrypoint.sh
     volumes:
       - web-static:/var/www/livedata/static
