@@ -1,6 +1,7 @@
 name: Docker publish
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - next
@@ -36,17 +37,12 @@ jobs:
         run: |
           # --quiet should turn off progress bars to make logs more readable
           conda env create
-      - name: Get version
-        id: version
-        run: |
-          conda activate livedata
-          echo "version=$(versioningit)" >> $GITHUB_OUTPUT
 
       - name: Create tag version
         id: tag
         run: |
           conda activate livedata
-          echo "tag=$(versioningit).b$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+          echo "tag=$(versioningit)" >> $GITHUB_OUTPUT
 
       - name: Create latest tag version
         id: latest_tag
@@ -88,7 +84,14 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          tags: |
-            ${{ env.REGISTRY }}/${{ github.repository }}/live_data_server:${{ steps.latest_tag.outputs.latest_tag }}
-            ${{ env.REGISTRY }}/${{ github.repository }}/live_data_server:${{ steps.tag.outputs.tag }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}/live_data_server:${{ steps.latest_tag.outputs.latest_tag }}
+          push: true
+
+      - name: Push version tag only for main branch
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}/live_data_server:${{ steps.tag.outputs.tag }}
           push: true
