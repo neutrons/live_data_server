@@ -8,7 +8,6 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import dateformat, timezone
@@ -38,8 +37,10 @@ def check_credentials(fn):
             if request_user is not None and not request_user.is_anonymous:
                 login(request, request_user)
                 return fn(request, *args, **kws)
+            else:
+                return HttpResponse(status=401)
         else:
-            raise PermissionDenied
+            return HttpResponse(status=401)
 
     return request_processor
 
@@ -56,7 +57,7 @@ def update_as_json(request, instrument, run_id):  # noqa: ARG001
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
     if plot_data is None:
-        error_msg = "No data available for %s %s" % (instrument, run_id)
+        error_msg = f"No data available for {instrument} {run_id}"
         logging.error(error_msg)
         return HttpResponseNotFound(error_msg)
 
@@ -76,7 +77,7 @@ def update_as_html(request, instrument, run_id):  # noqa: ARG001
     plot_data = view_util.get_plot_data(instrument, run_id, data_type=data_type)
 
     if plot_data is None:
-        error_msg = "No data available for %s %s" % (instrument, run_id)
+        error_msg = f"No data available for {instrument} {run_id}"
         logging.error(error_msg)
         return HttpResponseNotFound(error_msg)
 
@@ -93,7 +94,7 @@ def _store(request, instrument, run_id=None, as_user=False):
     @param run_id: run number
     @param as_user: if True, we will store as user data
     """
-    if request.user.is_authenticated and "file" in request.FILES:
+    if "file" in request.FILES:
         raw_data = request.FILES["file"].read().decode("utf-8")
         data_type_default = PlotData.get_data_type_from_data(raw_data)
         data_type = request.POST.get("data_type", default=data_type_default)
@@ -103,7 +104,7 @@ def _store(request, instrument, run_id=None, as_user=False):
         else:
             view_util.store_plot_data(instrument, run_id, raw_data, data_type)
     else:
-        raise PermissionDenied
+        return HttpResponse(status=400)
 
     return HttpResponse()
 
@@ -129,26 +130,22 @@ def upload_user_data(request, user):
 
 @csrf_exempt
 @check_credentials
-def get_data_list(request, instrument):
+def get_data_list(_, instrument):
     """
     Get a list of user data
     """
-    if request.user.is_authenticated:
-        instrument_object = get_object_or_404(Instrument, name=instrument.lower())
-        data_list = []
-        for item in DataRun.objects.filter(instrument=instrument_object):
-            localtime = timezone.localtime(item.created_on)
-            df = dateformat.DateFormat(localtime)
-            data_list.append(
-                dict(
-                    id=item.id,
-                    run_number=str(item.run_number),
-                    run_id=item.run_id,
-                    timestamp=item.created_on.isoformat(),
-                    created_on=df.format(settings.DATETIME_FORMAT),
-                )
+    instrument_object = get_object_or_404(Instrument, name=instrument.lower())
+    data_list = []
+    for item in DataRun.objects.filter(instrument=instrument_object):
+        localtime = timezone.localtime(item.created_on)
+        df = dateformat.DateFormat(localtime)
+        data_list.append(
+            dict(
+                id=item.id,
+                run_number=str(item.run_number),
+                run_id=item.run_id,
+                timestamp=item.created_on.isoformat(),
+                created_on=df.format(settings.DATETIME_FORMAT),
             )
-        response = HttpResponse(json.dumps(data_list), content_type="application/json")
-        return response
-    else:
-        raise PermissionDenied
+        )
+    return JsonResponse(data_list, safe=False)

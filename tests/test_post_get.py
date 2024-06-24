@@ -10,6 +10,7 @@ TEST_URL = "http://127.0.0.1"
 HTTP_OK = requests.status_codes.codes["OK"]
 HTTP_UNAUTHORIZED = requests.status_codes.codes["unauthorized"]
 HTTP_NOT_FOUND = requests.status_codes.codes["NOT_FOUND"]
+HTTP_BAD_REQUEST = requests.status_codes.codes["BAD_REQUEST"]
 
 
 class TestLiveDataServer:
@@ -95,6 +96,13 @@ class TestLiveDataServer:
         assert http_request.status_code == HTTP_OK
         assert http_request.text == files["file"]
 
+        # test that getting the json should return not found
+        http_request = requests.get(
+            f"{TEST_URL}/plots/{instrument}/{run_number}/update/json/?key={_generate_key(instrument, run_number)}"
+        )
+        assert http_request.status_code == HTTP_NOT_FOUND
+        assert http_request.text == "No data available for REF_M 12346"
+
         # test GET request - no key
         # TODO: this should return 401 unauthorized
         url = base_url
@@ -150,6 +158,73 @@ class TestLiveDataServer:
         )
         assert response.status_code == HTTP_NOT_FOUND
         assert response.text == "No data available for instrument0 123"
+
+    def test_bad_request(self):
+        instrument = "instrument1"
+        run_number = 1234
+
+        # test if missing files in post request
+        monitor_user = {
+            "username": os.environ.get("DJANGO_SUPERUSER_USERNAME"),
+            "password": os.environ.get("DJANGO_SUPERUSER_PASSWORD"),
+        }
+
+        # missing files
+        http_request = requests.post(
+            f"{TEST_URL}/plots/{instrument}/{run_number}/upload_plot_data/",
+            data=monitor_user,
+        )
+        assert http_request.status_code == HTTP_BAD_REQUEST
+
+        # used filename instead of file in files
+        http_request = requests.post(
+            f"{TEST_URL}/plots/{instrument}/{run_number}/upload_plot_data/",
+            data=monitor_user,
+            files={"filename": ""},
+        )
+        assert http_request.status_code == HTTP_BAD_REQUEST
+
+    def test_unauthorized(self):
+        # test get request unauthorized
+        monitor_user = {
+            "username": os.environ.get("DJANGO_SUPERUSER_USERNAME"),
+            "password": os.environ.get("DJANGO_SUPERUSER_PASSWORD"),
+        }
+        response = requests.get(f"{TEST_URL}/plots/instrument/list/", data=monitor_user)
+        assert response.status_code == HTTP_UNAUTHORIZED
+
+        # test wrong password
+        monitor_user = {
+            "username": os.environ.get("DJANGO_SUPERUSER_USERNAME"),
+            "password": "WrongPassword",
+        }
+        response = requests.post(f"{TEST_URL}/plots/instrument/list/", data=monitor_user)
+        assert response.status_code == HTTP_UNAUTHORIZED
+
+        # missing username and password
+        response = requests.post(f"{TEST_URL}/plots/instrument/list/")
+        assert response.status_code == HTTP_UNAUTHORIZED
+
+    def test_session(self):
+        # once you authenicate once with username and password you should be able to reuse the session with credentials
+        session = requests.Session()
+
+        monitor_user = {
+            "username": os.environ.get("DJANGO_SUPERUSER_USERNAME"),
+            "password": os.environ.get("DJANGO_SUPERUSER_PASSWORD"),
+        }
+
+        # initial get should be unauthorized
+        response = session.get(f"{TEST_URL}/plots/not_a_instrument/list/")
+        assert response.status_code == HTTP_UNAUTHORIZED
+
+        # do post with username and password, expect not found for "not_a_instrument"
+        response = session.post(f"{TEST_URL}/plots/not_a_instrument/list/", data=monitor_user)
+        response.status_code == HTTP_NOT_FOUND
+
+        # now get with same session should be authorized
+        response = session.get(f"{TEST_URL}/plots/not_a_instrument/list/")
+        response.status_code == HTTP_NOT_FOUND
 
 
 def _generate_key(instrument, run_id):
