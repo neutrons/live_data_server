@@ -20,62 +20,68 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e'
+SECRET_KEY = "bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("APP_DEBUG", False))
-#CSRF_COOKIE_SECURE = True
-#SESSION_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = ['.ornl.gov', '.sns.gov', 'localhost', '127.0.0.1']
- 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testfixture02-test.ornl.gov', 'livedata.sns.gov', 'scse-livedata-prod1.sns.gov']
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [".ornl.gov", ".sns.gov", "localhost", "127.0.0.1"]
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "testfixture02-test.ornl.gov",
+    "livedata.sns.gov",
+    "scse-livedata-prod1.sns.gov",
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'plots.apps.PlotsConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
+    "plots.apps.PlotsConfig",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'live_data_server.urls'
+ROOT_URLCONF = "live_data_server.urls"
 
 CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'live_data_server.wsgi.application'
+WSGI_APPLICATION = "live_data_server.wsgi.application"
 
 
 # Database
@@ -93,12 +99,12 @@ DATABASES = {
         "PORT": os.environ.get("DATABASE_PORT"),
     }
 }
-DATABASES['default']['CONN_MAX_AGE']=5
+DATABASES["default"]["CONN_MAX_AGE"] = 5
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'webcache',
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "webcache",
     }
 }
 
@@ -107,16 +113,16 @@ CACHES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -124,9 +130,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = "America/New_York"
 
 USE_I18N = True
 
@@ -138,8 +144,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/livedata/static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = "/var/www/livedata/static/"
 
 # Add secret key to settings only if there's a non-empty environment variable with same name
 if "LIVE_PLOT_SECRET_KEY" in os.environ:
@@ -149,8 +155,7 @@ if "LIVE_PLOT_SECRET_KEY" in os.environ:
 
 # Import local settings if available
 try:
-    from local_settings import *
-except ImportError as e:
+    from local_settings import *  # noqa: F403
+except ImportError:
     LOCAL_SETTINGS = False
     pass
-

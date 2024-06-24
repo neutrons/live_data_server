@@ -24,4 +24,4 @@ python manage.py createcachetable webcache
 python manage.py ensure_adminuser --username=${DJANGO_SUPERUSER_USERNAME} --email='workflow@example.com' --password=${DJANGO_SUPERUSER_PASSWORD}
 
 # run application
-gunicorn live_data_server.wsgi:application -w 2 -b :8000 --reload
+${COVERAGE_RUN} gunicorn live_data_server.wsgi:application -w 2 -b :8000 --reload

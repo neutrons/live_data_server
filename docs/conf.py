@@ -13,7 +13,7 @@ from live_data_server import __version__ as release
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "LIVE DATA SERVER"
-copyright = "2023, SAE@ORNL"
+copyright = "2023, SAE@ORNL"  # noqa A001
 author = "SAE@ORNL"
 
 # The version info for the project you're documenting, acts as replacement for

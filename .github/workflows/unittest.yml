@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: main
+    branches: [next, qa, main]
     tags: ['v*']
 
 jobs:
@@ -22,9 +22,10 @@ jobs:
       LIVE_PLOT_SECRET_KEY: "1234_live_data_server"
       DJANGO_SUPERUSER_USERNAME: livedatauser
       DJANGO_SUPERUSER_PASSWORD: livedatapass
+      COVERAGE_RUN: coverage run -m
     steps:
-      - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           channels: conda-forge,defaults
@@ -35,8 +36,28 @@ jobs:
       - name: Start docker containers
         run: |
           cp ./config/docker-compose.envlocal.yml docker-compose.yml
-          docker compose up --build -d
+          docker-compose up --build -d
       - name: Sleep, wait for containers to start up
         run: sleep 30
       - name: Run unit tests
         run: python -m pytest tests/
+      - name: Stop the coverage process
+        # Stopping the coverage process allows the code coverage to be written to disk
+        run: docker exec live_data_server_livedata_1 /bin/bash -c "pkill coverage"
+      - name: Copy code coverage out of docker container
+        run: docker cp live_data_server_livedata_1:/var/www/livedata/app /tmp/
+      - name: Combine and show code coverage
+        shell: bash -l {0}
+        run: |
+          cd /tmp/app
+          coverage combine
+          coverage xml
+          cp coverage.xml $OLDPWD
+          coverage report
+      - name: Bring down docker containers completely now
+        # This will completely remove the containers
+        run: docker-compose down
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

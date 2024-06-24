@@ -2,13 +2,19 @@ name: livedata
 channels:
   - conda-forge
 dependencies:
-  - python=3.6
+  - python=3.7
   - pip
   - postgresql=9.5.3
   - sphinx
   - sphinx_rtd_theme
-  - django=2.0
+  - django=2.1
   - django-cors-headers
   - psycopg2
   - gunicorn
   - pytest
+  - build
+  - versioningit
+  - toml
+  - requests<2.31 # can remove this condition once we allow newer versions of openssl
+  - pre-commit
+  - coverage
