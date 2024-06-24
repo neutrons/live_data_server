@@ -3,6 +3,7 @@ Data server for data plots
 
 <!-- Badges -->
 [![Documentation Status](https://readthedocs.org/projects/livedata-ornl/badge/?version=latest)](https://livedata-ornl.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/neutrons/live_data_server/graph/badge.svg?token=niQ0AWldBd)](https://codecov.io/gh/neutrons/live_data_server)
 
 Developer documentation at https://livedata-ornl.readthedocs.io/en/latest/
 
