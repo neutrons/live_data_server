@@ -93,19 +93,3 @@ class PlotData(models.Model):
         Returns the correct data type ID for a given string representation
         """
         return DATA_TYPES.get(type_string, DATA_TYPES["json"])
-
-    @classmethod
-    def data_type_as_string(cls, data_type):
-        """
-        Return an internal name to use for a given data_type.
-        This name is generally used in function names and relates
-        to the data format (json or html). In principle, different
-        data types can return the same string.
-
-        @param data_type: data type ID [integer]
-        """
-        data_type = int(data_type)
-        data_type_info = DATA_TYPE_INFO.get(data_type)
-        if data_type_info is not None:
-            return data_type_info["name"]
-        return None

@@ -10,7 +10,6 @@ from . import views
 app_name = "plots"
 
 urlpatterns = [
-    re_path(r"^(?P<instrument>[\w]+)/(?P<run_id>\d+)/$", views.live_plot, name="live_plot"),
     re_path(r"^(?P<instrument>[\w]+)/(?P<run_id>\d+)/update/json/$", views.update_as_json, name="update_as_json"),
     re_path(r"^(?P<instrument>[\w]+)/(?P<run_id>\d+)/update/html/$", views.update_as_html, name="update_as_html"),
     re_path(

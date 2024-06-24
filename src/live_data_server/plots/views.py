@@ -10,8 +10,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
-from django.shortcuts import get_object_or_404, render_to_response
-from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from django.utils import dateformat, timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
@@ -19,15 +18,6 @@ from django.views.decorators.csrf import csrf_exempt
 from plots.models import DataRun, Instrument, PlotData
 
 from . import view_util
-
-
-def _check_credentials(request):
-    """
-    Internal utility method to check whether a user has access to a view
-    """
-    # If we don't allow guests but the user is authenticated, return the function
-    if request.user.is_authenticated:
-        return True
 
 
 def check_credentials(fn):
@@ -52,27 +42,6 @@ def check_credentials(fn):
             raise PermissionDenied
 
     return request_processor
-
-
-def live_plot(request, instrument, run_id):
-    """
-    Test view for live plotting.
-    @param instrument: instrument name
-    @param run_id: run number
-    """
-    data_type_default = PlotData.get_data_type_from_string("html")
-    data_type = request.GET.get("data_type", default=data_type_default)
-    update_url = reverse(
-        "plots:update_as_%s" % PlotData.data_type_as_string(data_type),
-        kwargs={"instrument": instrument, "run_id": run_id},
-    )
-    client_key = view_util.generate_key(instrument, run_id)
-    if client_key is not None:
-        update_url += "?key=%s" % client_key
-    template_values = {}
-    template_values["data_type"] = data_type
-    template_values["update_url"] = update_url
-    return render_to_response("plots/live_plot.html", template_values)
 
 
 @view_util.check_key
