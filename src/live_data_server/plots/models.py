@@ -19,7 +19,7 @@ class Instrument(models.Model):
     name = models.CharField(max_length=128, unique=True)
     run_id_type = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -35,8 +35,8 @@ class DataRun(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.deletion.CASCADE)
     created_on = models.DateTimeField("Timestamp", auto_now_add=True)
 
-    def __unicode__(self):
-        return "%s_%d_%s" % (self.instrument, self.run_number, self.run_id)
+    def __str__(self):
+        return f"{self.instrument}_{self.run_number}_{self.run_id}"
 
 
 class PlotData(models.Model):
@@ -56,8 +56,8 @@ class PlotData(models.Model):
 
     timestamp = models.DateTimeField("Timestamp")
 
-    def __unicode__(self):
-        return "%s" % self.data_run
+    def __str__(self):
+        return str(self.data_run)
 
     def is_div(self):
         """
