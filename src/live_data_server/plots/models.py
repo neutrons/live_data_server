@@ -19,7 +19,7 @@ class Instrument(models.Model):
     name = models.CharField(max_length=128, unique=True)
     run_id_type = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -35,8 +35,8 @@ class DataRun(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.deletion.CASCADE)
     created_on = models.DateTimeField("Timestamp", auto_now_add=True)
 
-    def __unicode__(self):
-        return "%s_%d_%s" % (self.instrument, self.run_number, self.run_id)
+    def __str__(self):
+        return f"{self.instrument}_{self.run_number}_{self.run_id}"
 
 
 class PlotData(models.Model):
@@ -56,14 +56,8 @@ class PlotData(models.Model):
 
     timestamp = models.DateTimeField("Timestamp")
 
-    def __unicode__(self):
-        return "%s" % self.data_run
-
-    def is_div(self):
-        """
-        Return whether the data is a <div>
-        """
-        return self.data_type % 100 == 1
+    def __str__(self):
+        return str(self.data_run)
 
     def is_data_type_valid(self, data_type):
         """
@@ -93,19 +87,3 @@ class PlotData(models.Model):
         Returns the correct data type ID for a given string representation
         """
         return DATA_TYPES.get(type_string, DATA_TYPES["json"])
-
-    @classmethod
-    def data_type_as_string(cls, data_type):
-        """
-        Return an internal name to use for a given data_type.
-        This name is generally used in function names and relates
-        to the data format (json or html). In principle, different
-        data types can return the same string.
-
-        @param data_type: data type ID [integer]
-        """
-        data_type = int(data_type)
-        data_type_info = DATA_TYPE_INFO.get(data_type)
-        if data_type_info is not None:
-            return data_type_info["name"]
-        return None
