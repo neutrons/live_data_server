@@ -59,12 +59,6 @@ class PlotData(models.Model):
     def __str__(self):
         return str(self.data_run)
 
-    def is_div(self):
-        """
-        Return whether the data is a <div>
-        """
-        return self.data_type % 100 == 1
-
     def is_data_type_valid(self, data_type):
         """
         Verify that a given data type matches the stored data
