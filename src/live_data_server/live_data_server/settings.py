@@ -26,7 +26,7 @@ SECRET_KEY = "bq!jvls*4&^r^_za38ki!@rd7p3d83(f@@@&9q!)j0=5wln3&e"
 DEBUG = bool(os.environ.get("APP_DEBUG", False))
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = [".ornl.gov", ".sns.gov", "localhost", "127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = ["https://*.ornl.gov", "https://*.sns.gov", "http://localhost", "http://127.0.0.1"]
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -63,7 +63,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "live_data_server.urls"
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
@@ -89,7 +89,7 @@ WSGI_APPLICATION = "live_data_server.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",  # , 'mysql', 'sqlite3' or 'oracle'.
+        "ENGINE": "django.db.backends.postgresql",  # , 'mysql', 'sqlite3' or 'oracle'.
         "NAME": os.environ.get("DATABASE_NAME"),  # Or path to database file if using sqlite3.
         "USER": os.environ.get("DATABASE_USER"),  # Not used with sqlite3.
         "PASSWORD": os.environ.get("DATABASE_PASS"),  # Not used with sqlite3.

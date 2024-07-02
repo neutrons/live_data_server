@@ -1,4 +1,3 @@
-# pylint: disable=unused-argument, invalid-name
 """
 Definition of views
 """

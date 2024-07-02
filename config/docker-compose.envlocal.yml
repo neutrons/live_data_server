@@ -44,8 +44,7 @@ services:
         condition: service_healthy
 
   db:
-    # do not upgrade to version > 9.6.23 unless you also upgrade livedata image
-    image: postgres:9.6.23
+    image: postgres:16
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}
