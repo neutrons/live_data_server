@@ -3,7 +3,7 @@ import hashlib
 import json
 import os
 
-import psycopg2
+import psycopg
 import requests
 
 TEST_URL = "http://127.0.0.1"
@@ -17,8 +17,8 @@ class TestLiveDataServer:
     @classmethod
     def setup_class(cls):
         """Clean the database before running tests"""
-        conn = psycopg2.connect(
-            database=os.environ.get("DATABASE_NAME"),
+        conn = psycopg.connect(
+            dbname=os.environ.get("DATABASE_NAME"),
             user=os.environ.get("DATABASE_USER"),
             password=os.environ.get("DATABASE_PASS"),
             port=os.environ.get("DATABASE_PORT"),
