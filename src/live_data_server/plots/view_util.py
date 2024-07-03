@@ -45,9 +45,7 @@ def check_key(fn):
         try:
             client_key = request.GET.get("key", None)
             server_key = generate_key(instrument, run_id)
-            # Temporary bypass during testing
-            # Remove client_key is None condition when we deploy
-            if client_key is None or server_key is None or client_key == server_key:
+            if server_key is None or client_key == server_key:
                 return fn(request, instrument, run_id)
             return HttpResponse(status=401)
         except:  # noqa: E722

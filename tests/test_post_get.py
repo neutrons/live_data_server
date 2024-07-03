@@ -104,10 +104,9 @@ class TestLiveDataServer:
         assert http_request.text == "No data available for REF_M 12346"
 
         # test GET request - no key
-        # TODO: this should return 401 unauthorized
         url = base_url
         http_request = requests.get(url)
-        assert http_request.status_code == HTTP_OK
+        assert http_request.status_code == HTTP_UNAUTHORIZED
 
         # test GET request - wrong key
         url = f"{base_url}?key=WRONG-KEY"
