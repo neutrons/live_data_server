@@ -113,6 +113,13 @@ class TestLiveDataServer:
         http_request = requests.get(url)
         assert http_request.status_code == HTTP_UNAUTHORIZED
 
+        # test GET request - wrong key
+        http_request = requests.get(
+            base_url,
+            headers={"Authorization": "WRONG-KEY"},
+        )
+        assert http_request.status_code == HTTP_UNAUTHORIZED
+
     def test_upload_plot_data_json(self):
         # test that when you upload json you can get back the same stuff
         instrument = "instrument0"
@@ -145,7 +152,8 @@ class TestLiveDataServer:
 
         # now get the data as json
         response = requests.get(
-            f"{TEST_URL}/plots/{instrument}/{run_number}/update/json/?key={_generate_key(instrument, run_number)}"
+            f"{TEST_URL}/plots/{instrument}/{run_number}/update/json/",
+            headers={"Authorization": _generate_key(instrument, run_number)},
         )
         assert response.status_code == HTTP_OK
         assert response.headers["Content-Type"] == "application/json"
@@ -153,7 +161,8 @@ class TestLiveDataServer:
 
         # now try getting it as html, should fail
         response = requests.get(
-            f"{TEST_URL}/plots/{instrument}/{run_number}/update/html/?key={_generate_key(instrument, run_number)}"
+            f"{TEST_URL}/plots/{instrument}/{run_number}/update/html/",
+            headers={"Authorization": _generate_key(instrument, run_number)},
         )
         assert response.status_code == HTTP_NOT_FOUND
         assert response.text == "No data available for instrument0 123"
@@ -234,9 +243,7 @@ def _generate_key(instrument, run_id):
     @param run_id: run number
     """
     secret_key = os.environ.get("LIVE_PLOT_SECRET_KEY")
-    if len(secret_key) == 0:
+    if secret_key is None or len(secret_key) == 0:
         return None
-    else:
-        h = hashlib.sha1()
-        h.update(("%s%s%s" % (instrument.upper(), secret_key, run_id)).encode("utf-8"))
-        return h.hexdigest()
+
+    return hashlib.sha1(f"{instrument.upper()}{secret_key}{run_id}".encode("utf-8")).hexdigest()
