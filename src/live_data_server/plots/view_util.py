@@ -24,10 +24,8 @@ def generate_key(instrument, run_id):
     secret_key = settings.LIVE_PLOT_SECRET_KEY
     if len(secret_key) == 0:
         return None
-    else:
-        h = hashlib.sha1()
-        h.update(("%s%s%s" % (instrument.upper(), secret_key, run_id)).encode("utf-8"))
-        return h.hexdigest()
+
+    return hashlib.sha1(f"{instrument.upper()}{secret_key}{run_id}".encode("utf-8")).hexdigest()
 
 
 def check_key(fn):
@@ -43,11 +41,18 @@ def check_key(fn):
         Decorator function
         """
         try:
-            client_key = request.GET.get("key", None)
             server_key = generate_key(instrument, run_id)
-            # Temporary bypass during testing
-            # Remove client_key is None condition when we deploy
-            if client_key is None or server_key is None or client_key == server_key:
+            if server_key is None:
+                return fn(request, instrument, run_id)
+
+            client_key = request.META.get("HTTP_AUTHORIZATION")
+
+            # getting the client_key from request.GET.get("key") should be
+            # removed after WebMon/WebRef supports Authorization request header
+            if client_key is None:
+                client_key = request.GET.get("key")
+
+            if client_key == server_key:
                 return fn(request, instrument, run_id)
             return HttpResponse(status=401)
         except:  # noqa: E722
