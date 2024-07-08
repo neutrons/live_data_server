@@ -47,11 +47,6 @@ def check_key(fn):
 
             client_key = request.META.get("HTTP_AUTHORIZATION")
 
-            # getting the client_key from request.GET.get("key") should be
-            # removed after WebMon/WebRef supports Authorization request header
-            if client_key is None:
-                client_key = request.GET.get("key")
-
             if client_key == server_key:
                 return fn(request, instrument, run_id)
             return HttpResponse(status=401)
