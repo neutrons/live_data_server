@@ -27,7 +27,7 @@ conda env create -f environment.yml
 conda activate livedata
 ```
 
-To deploy this application locally, you will need to set a number of environment variables,  
+To deploy this application locally, you will need to set a number of environment variables,
 for example (bash):
 
 ```bash
@@ -46,10 +46,10 @@ export DJANGO_SUPERUSER_PASSWORD=$DATABASE_PASS
 
 **Notes**:
 
-- The `DATABASE_PORT` _must_ be set to `5432`, as Postgres is configured to listen on that port by default.  
+- The `DATABASE_PORT` _must_ be set to `5432`, as Postgres is configured to listen on that port by default.
   If you need to change the port, you will need to modify the `docker-compose.yml` file accordingly.
 
-- It is recommended to save these variables into an `.envrc` file which can be managed by [direnv](https://direnv.net/).  
+- It is recommended to save these variables into an `.envrc` file which can be managed by [direnv](https://direnv.net/).
   direnv will automatically load the variables when you `cd` into the project directory.
 
 After the secrets are set, type in the terminal shell:
@@ -60,7 +60,7 @@ make local/docker/up
 
 This command will copy `config/docker-compose.envlocal.yml` into `docker-compose.yml` before composing all the services.
 
-Type `make help` to learn about other macros available as make targets.  
+Type `make help` to learn about other macros available as make targets.
 For instance, `make docker/pruneall` will stop all containers, then remove all containers, images, networks, and volumes.
 
 ### Testing
@@ -73,8 +73,8 @@ pytest tests/test_post_get.py
 pytest
 ```
 
-**NOTE:**  
-The environment variables `DJANGO_SUPERUSER_USERNAME` and `DJANGO_SUPERUSER_PASSWORD` are defined in the `docker-compose.envlocal.yml` file, but `pytest` does not read this file.  
+**NOTE:**
+The environment variables `DJANGO_SUPERUSER_USERNAME` and `DJANGO_SUPERUSER_PASSWORD` are defined in the `docker-compose.envlocal.yml` file, but `pytest` does not read this file.
 You must either have them exported to the shell where `pytest` is to be run, as described above, or modify the `pytest` command to include them, e.g.:
 
 ```bash

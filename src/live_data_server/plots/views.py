@@ -2,9 +2,9 @@
 Definition of views
 """
 
-from datetime import timedelta
 import json
 import logging
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -21,8 +21,7 @@ from . import view_util
 # from plots.models import DataRun, Instrument, PlotData
 from .models import DataRun, Instrument, PlotData
 
-
-DEFAULT_EXPIRATION_TIME = 365 * 3 # 3 years
+DEFAULT_EXPIRATION_TIME = 365 * 3  # 3 years
 
 
 def check_credentials(fn):

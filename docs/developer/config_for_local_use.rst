@@ -11,7 +11,7 @@ Create a conda environment ``livedata``, containing all the dependencies
   conda env create -f environment.yml
   conda activate livedata
 
-To deploy this application locally, you will need to set a number of environment variables,  
+To deploy this application locally, you will need to set a number of environment variables,
 for example (bash):
 
 .. code-block:: bash
@@ -31,10 +31,10 @@ for example (bash):
 
 *NOTES*:
 
-- The ``DATABASE_PORT`` **must** be set to ``5432``, as Postgres is configured to listen on that port by default.  
+- The ``DATABASE_PORT`` **must** be set to ``5432``, as Postgres is configured to listen on that port by default.
   If you need to change the port, you will need to modify the ``docker-compose.yml`` file accordingly.
 
-- It is recommended to save these variables into an ``.envrc`` file which can be managed by `direnv <https://direnv.net/>`_.  
+- It is recommended to save these variables into an ``.envrc`` file which can be managed by `direnv <https://direnv.net/>`_.
   direnv will automatically load the variables when you ``cd`` into the project directory.
 
 After the secrets are set, you can start the server with:
@@ -45,7 +45,7 @@ After the secrets are set, you can start the server with:
 
 This command will copy ``config/docker-compose.envlocal.yml`` into ``./docker-compose.yml`` before composing all the services.
 
-| Run ``make help`` to learn about other macros available as make targets.  
+| Run ``make help`` to learn about other macros available as make targets.
 | For instance, ``make docker/pruneall`` will stop all containers, then remove all containers, images, networks, and volumes.
 
 Testing
@@ -60,8 +60,8 @@ After the setup, with the server running, you can test your setup with ``pytest`
   # or run a specific test
   pytest tests/test_post_get.py
 
-*NOTE:*  
-The environment variables ``DJANGO_SUPERUSER_USERNAME`` and ``DJANGO_SUPERUSER_PASSWORD`` are defined in the ``docker-compose.envlocal.yml`` file, but ``pytest`` does not read this file.  
+*NOTE:*
+The environment variables ``DJANGO_SUPERUSER_USERNAME`` and ``DJANGO_SUPERUSER_PASSWORD`` are defined in the ``docker-compose.envlocal.yml`` file, but ``pytest`` does not read this file.
 You must either have them exported to the shell where ``pytest`` is to be run, as described above, or modify the ``pytest`` command to include them, e.g.:
 
 .. code-block:: bash
@@ -74,7 +74,7 @@ API
 I personally recommend using `Postman <https://www.postman.com/>`_ when interacting with the api.
 If you do, set the request body to ``form-data``!
 
-Some relevant form-data field keys: 
+Some relevant form-data field keys:
 
 #. file
 #. username
