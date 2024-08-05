@@ -1,5 +1,3 @@
-# 3rd-party imports
-# standard imports
 import os
 import sys
 

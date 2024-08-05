@@ -4,10 +4,12 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import os
 import sys
+from importlib import metadata
 
-sys.path.insert(0, os.path.abspath("../live_data_server"))
+# sys.path.insert(0, os.path.abspath("../live_data_server"))
+# from live_data_server import __version__ as release
 
-from live_data_server import __version__ as release
+release = metadata.version("live_data_server")
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -67,7 +69,7 @@ html_theme = "sphinx_rtd_theme"  # "alabaster"
 autosummary_generate = True
 
 # Napoleon settings
-napoleon_google_docstring = False
+napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 
 # Add any paths that contain custom static files (such as style sheets) here,

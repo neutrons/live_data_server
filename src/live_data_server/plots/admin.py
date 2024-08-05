@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from plots.models import DataRun, Instrument, PlotData
 
 

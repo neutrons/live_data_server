@@ -5,12 +5,14 @@ Utility functions to support views.
 import hashlib
 import logging
 import sys
+from datetime import datetime
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils import timezone
 
-from plots.models import DataRun, Instrument, PlotData
+# from plots.models import DataRun, Instrument, PlotData
+from .models import DataRun, Instrument, PlotData
 
 
 def generate_key(instrument, run_id):
@@ -62,7 +64,12 @@ def check_key(fn):
     return request_processor
 
 
-def get_or_create_run(instrument, run_id, create=True):
+def get_or_create_run(
+    instrument,
+    run_id,
+    expiration_date: datetime = None,
+    create: bool = True,
+):
     """
     Retrieve a run entry, or create it.
     @param instrument: instrument name
@@ -89,6 +96,7 @@ def get_or_create_run(instrument, run_id, create=True):
         run_obj = DataRun()
         run_obj.instrument = instrument_obj
         run_obj.run_number = run_id
+        run_obj.expiration_date = expiration_date
         run_obj.save()
     else:
         return None
@@ -113,10 +121,10 @@ def get_plot_data(instrument, run_id, data_type=None):
     return None
 
 
-def store_user_data(user, data_id, data, data_type):
+def store_user_data(user, data_id, data, data_type, expiration_date: datetime):
     """
-    Store plot data and associate it to a user identifier (a name, not
-    an actual user since users don't log in to this system).
+    Store plot data and associate it to a user identifier
+    (a name, not an actual user since users don't log in to this system).
     """
     # Get or create the instrument
     instrument_list = Instrument.objects.filter(name=user.lower())
@@ -135,9 +143,10 @@ def store_user_data(user, data_id, data, data_type):
         run_obj.instrument = instrument_obj
         run_obj.run_number = 0
         run_obj.run_id = data_id
+        run_obj.expiration_date = expiration_date
         run_obj.save()
         # Since user data have no run number, force the run number to be the PK,
-        # which is unique and will allow use to retrieve the data live normal
+        # which is unique and will allow user to retrieve the data like normal
         # instrument data.
         run_obj.run_number = run_obj.id
         run_obj.save()
@@ -157,7 +166,7 @@ def store_user_data(user, data_id, data, data_type):
     plot_data.save()
 
 
-def store_plot_data(instrument, run_id, data, data_type):
+def store_plot_data(instrument, run_id, data, data_type, expiration_date: datetime):
     """
     Store plot data
     @param instrument: instrument name
@@ -165,7 +174,7 @@ def store_plot_data(instrument, run_id, data, data_type):
     @param data: data to be stored
     @param data_type: requested data type
     """
-    run_object = get_or_create_run(instrument, run_id)
+    run_object = get_or_create_run(instrument, run_id, expiration_date)
 
     # Look for a data file and treat it differently
     data_entries = PlotData.objects.filter(data_run=run_object)
