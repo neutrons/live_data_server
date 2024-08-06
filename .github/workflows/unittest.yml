@@ -61,10 +61,10 @@ jobs:
 
       - name: Stop the coverage process
         # Stopping the coverage process allows the code coverage to be written to disk
-        run: docker exec live_data_server_livedata_1 /bin/bash -c "pkill coverage"
+        run: docker exec live_data_server-livedata1 /bin/bash -c "pkill coverage"
 
       - name: Copy code coverage out of docker container
-        run: docker cp live_data_server_livedata_1:/var/www/livedata/app /tmp/
+        run: docker cp live_data_server-livedata1:/var/www/livedata/app /tmp/
 
       - name: Combine and show code coverage
         shell: bash -l {0}
