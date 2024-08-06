@@ -36,7 +36,6 @@ class TestLiveDataServer:
         conn.close()
 
     def test_post_request(self, data_server):
-
         # load html plot as autoreduce service
         filename = "reflectivity.html"
         files = {"file": open(data_server.path_to(filename)).read()}

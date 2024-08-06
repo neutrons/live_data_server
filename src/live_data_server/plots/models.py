@@ -1,6 +1,7 @@
 """
 Plot data models
 """
+
 import logging
 import sys
 from datetime import timedelta
