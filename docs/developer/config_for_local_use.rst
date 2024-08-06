@@ -41,7 +41,7 @@ After the secrets are set, you can start the server with:
 
 .. code-block:: bash
 
-  make local/docker/up
+  make docker/compose/local
 
 This command will copy ``config/docker-compose.envlocal.yml`` into ``./docker-compose.yml`` before composing all the services.
 

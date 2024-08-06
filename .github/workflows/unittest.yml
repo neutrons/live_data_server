@@ -1,11 +1,11 @@
-name: unit-test
+name: Run unit tests
 
 on:
   workflow_dispatch:
   pull_request:
   push:
     branches: [next, qa, main]
-    tags: ['v*']
+    tags: ["v*"]
 
 jobs:
   linux:
@@ -13,6 +13,7 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
+
     env:
       DATABASE_NAME: livedatadb
       DATABASE_USER: livedatauser
@@ -23,29 +24,51 @@ jobs:
       DJANGO_SUPERUSER_USERNAME: livedatauser
       DJANGO_SUPERUSER_PASSWORD: livedatapass
       COVERAGE_RUN: coverage run -m
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache conda
+        uses: actions/cache@v4
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('etc/example-environment.yml') }}
+
+      - name: Setup Conda environment
+        uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           channels: conda-forge,defaults
           mamba-version: "*"
           environment-file: environment.yml
-          cache-environment-key: ${{ runner.os }}-env-${{ hashFiles('**/environment.yml') }}
-          cache-downloads-key: ${{ runner.os }}-downloads-${{ hashFiles('**/environment.yml') }}
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
+          #   These don't seem to be valid options for this action
+          #   See: https://github.com/conda-incubator/setup-miniconda
+          # cache-environment-key: ${{ runner.os }}-env-${{ hashFiles('**/environment.yml') }}
+          # cache-downloads-key: ${{ runner.os }}-downloads-${{ hashFiles('**/environment.yml') }}
+
       - name: Start docker containers
         run: |
           cp ./config/docker-compose.envlocal.yml docker-compose.yml
           docker-compose up --build -d
+
       - name: Sleep, wait for containers to start up
         run: sleep 30
+
       - name: Run unit tests
         run: python -m pytest tests/
+
       - name: Stop the coverage process
         # Stopping the coverage process allows the code coverage to be written to disk
         run: docker exec live_data_server_livedata_1 /bin/bash -c "pkill coverage"
+
       - name: Copy code coverage out of docker container
         run: docker cp live_data_server_livedata_1:/var/www/livedata/app /tmp/
+
       - name: Combine and show code coverage
         shell: bash -l {0}
         run: |
@@ -54,9 +77,11 @@ jobs:
           coverage xml
           cp coverage.xml $OLDPWD
           coverage report
+
       - name: Bring down docker containers completely now
         # This will completely remove the containers
         run: docker-compose down
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:

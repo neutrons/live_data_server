@@ -55,7 +55,7 @@ export DJANGO_SUPERUSER_PASSWORD=$DATABASE_PASS
 After the secrets are set, type in the terminal shell:
 
 ```bash
-make local/docker/up
+make docker/compose/local
 ```
 
 This command will copy `config/docker-compose.envlocal.yml` into `docker-compose.yml` before composing all the services.
