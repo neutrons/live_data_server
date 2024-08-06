@@ -44,7 +44,14 @@ jobs:
       - name: Start docker containers
         run: |
           cp ./config/docker-compose.envlocal.yml docker-compose.yml
-          docker-compose up --build -d
+          if [[ $(docker compose version 2>/dev/null) != "" ]]; then
+              DOCKER_COMPOSE="docker compose"
+          elif [[ $(docker-compose version 2>/dev/null) != "" ]]; then
+              DOCKER_COMPOSE="docker-compose"
+          else
+              echo "docker compose or docker-compose is not installed" && exit 1
+          fi
+          $DOCKER_COMPOSE up --build -d
 
       - name: Sleep, wait for containers to start up
         run: sleep 30
