@@ -35,7 +35,7 @@ docker/compose/validate:  ## validate the version of the docker-compose command.
 docker/compose/local: docker/compose/validate ## compose and start the service locally
 	\cp ./config/docker-compose.envlocal.yml docker-compose.yml
 	$(DOCKER_COMPOSE) up --build
-		
+
 .PHONY: check
 .PHONY: first_install
 .PHONY: help
