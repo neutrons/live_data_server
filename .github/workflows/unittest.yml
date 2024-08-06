@@ -29,15 +29,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache conda
-        uses: actions/cache@v4
-        env:
-          # Increase this value to reset cache if example-environment.yml has not changed
-          CACHE_NUMBER: 1
-        with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
-
       - name: Setup Conda environment
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -45,7 +36,6 @@ jobs:
           channels: conda-forge,defaults
           mamba-version: "*"
           environment-file: environment.yml
-          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
           #   These don't seem to be valid options for this action
           #   See: https://github.com/conda-incubator/setup-miniconda
           # cache-environment-key: ${{ runner.os }}-env-${{ hashFiles('**/environment.yml') }}
