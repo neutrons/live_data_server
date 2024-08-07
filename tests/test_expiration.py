@@ -96,7 +96,7 @@ class TestLiveDataServer:
 
         # create expired run
         expiration_date = datetime.now(tz=timezone.utc) - timedelta(days=365 * 3)
-        request_data["data_id"] = "reflectivity2.json"
+        request_data["data_id"] = "reflectivity_expired.json"
         request_data["expiration_date"] = expiration_date
         request = requests.post(
             f"{TEST_URL}/plots/{self.username}/upload_user_data/", data=request_data, files=files, verify=True
