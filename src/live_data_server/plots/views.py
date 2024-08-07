@@ -99,7 +99,6 @@ def _store(request, instrument, run_id=None, as_user=False):
     @param run_id: run number
     @param as_user: if True, we will store as user data
     """
-    # r =
     if "file" in request.FILES:
         raw_data = request.FILES["file"].read().decode("utf-8")
         data_type_default = PlotData.get_data_type_from_data(raw_data)
@@ -162,3 +161,43 @@ def get_data_list(_, instrument):
             )
         )
     return JsonResponse(data_list, safe=False)
+
+
+@csrf_exempt
+@check_credentials
+def get_all_runs(_):
+    """
+    Get a list of all runs for all instruments/users
+    """
+    data_list = []
+    for item in DataRun.objects.all():
+        timestamp_local = timezone.localtime(item.created_on)
+        timestamp_formatted = dateformat.DateFormat(timestamp_local).format(settings.DATETIME_FORMAT)
+        expiration_local = timezone.localtime(item.expiration_date)
+        expiration_formatted = dateformat.DateFormat(expiration_local).format(settings.DATETIME_FORMAT)
+        data_list.append(
+            dict(
+                id=item.id,
+                run_number=str(item.run_number),
+                run_id=item.run_id,
+                instrument=item.instrument.name,
+                timestamp=item.created_on.isoformat(),
+                created_on=timestamp_formatted,
+                expiration_date=expiration_formatted,
+                expired=True if expiration_local < timezone.now() else False,
+            )
+        )
+    return JsonResponse(data_list, safe=False)
+
+
+@csrf_exempt
+@check_credentials
+def purge_expired(_):
+    """
+    Delete all expired runs and related plots
+    """
+    runs = DataRun.objects.all()
+    for run in runs:
+        if run.expiration_date < timezone.now():
+            run.delete()
+    return HttpResponse()

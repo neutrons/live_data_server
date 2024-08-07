@@ -109,6 +109,18 @@ class TestLiveDataServer:
         )
         assert request.status_code == HTTP_OK
 
+        # check that expiration field for runs are marked correctly
         r = request.json()
         assert r[0]["expired"] is False
         assert r[1]["expired"] is True
+
+    def test_deleting_expired(self):
+        """Test the purge_expired view"""
+        r = requests.post(f"{TEST_URL}/plots/purge_expired/", data=self.user_data)
+        assert r.status_code == HTTP_OK
+
+        # check if all expired runs are deleted
+        r = requests.post(f"{TEST_URL}/plots/get_all_runs/", data=self.user_data)
+        runs = r.json()
+        assert len(runs) == 2
+        assert all(run["expired"] is False for run in runs)

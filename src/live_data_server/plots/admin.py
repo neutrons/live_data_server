@@ -8,7 +8,14 @@ class PlotDataAdmin(admin.ModelAdmin):
 
 
 class DataRunAdmin(admin.ModelAdmin):
-    list_display = ("id", "run_number", "run_id", "instrument", "created_on")
+    list_display = (
+        "id",
+        "run_number",
+        "run_id",
+        "instrument",
+        "created_on",
+        "expiration_date",
+    )
 
 
 admin.site.register(DataRun, DataRunAdmin)
