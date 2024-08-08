@@ -188,16 +188,3 @@ def get_all_runs(_):
             )
         )
     return JsonResponse(data_list, safe=False)
-
-
-@csrf_exempt
-@check_credentials
-def purge_expired(_):
-    """
-    Delete all expired runs and related plots
-    """
-    runs = DataRun.objects.all()
-    for run in runs:
-        if run.expiration_date < timezone.now():
-            run.delete()
-    return HttpResponse()

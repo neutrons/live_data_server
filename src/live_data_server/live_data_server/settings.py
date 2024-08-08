@@ -137,9 +137,9 @@ TIME_ZONE = "America/New_York"
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = True  # already set to True by default in 5.0
 
-USE_TZ = True
+USE_TZ = True  # already set to True by default in 5.0
 
 
 # Static files (CSS, JavaScript, Images)

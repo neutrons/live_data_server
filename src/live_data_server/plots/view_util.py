@@ -190,3 +190,13 @@ def store_plot_data(instrument, run_id, data, data_type, expiration_date: dateti
     plot_data.data_type = data_type
     plot_data.timestamp = timezone.now()
     plot_data.save()
+
+
+def purge_expired_runs():
+    """
+    Purge expired runs and related plots
+    """
+    runs = DataRun.objects.all()
+    for run in runs:
+        if run.expiration_date < timezone.now():
+            run.delete()

@@ -6,7 +6,8 @@ dependencies:
   - postgresql=16
   - sphinx
   - sphinx_rtd_theme
-  - django=4.2
+  # - django=4.2
+  - django=5.1
   - django-cors-headers=4.4
   - psycopg=3.2
   - gunicorn

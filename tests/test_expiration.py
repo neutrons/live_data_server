@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 from datetime import datetime, timedelta, timezone
 
 import psycopg
@@ -116,10 +117,12 @@ class TestLiveDataServer:
 
     def test_deleting_expired(self):
         """Test the purge_expired view"""
-        r = requests.post(f"{TEST_URL}/plots/purge_expired/", data=self.user_data)
-        assert r.status_code == HTTP_OK
+        command = "docker exec -i live_data_server-livedata-1 bash -ic"
+        subcommand = "conda activate livedata && cd app && python manage.py purge_expired_data"
+        output = subprocess.check_output([*command.split(" "), subcommand])
+        print(output)
 
-        # check if all expired runs are deleted
+        # Ensure the above ran and worked
         r = requests.post(f"{TEST_URL}/plots/get_all_runs/", data=self.user_data)
         runs = r.json()
         assert len(runs) == 2
