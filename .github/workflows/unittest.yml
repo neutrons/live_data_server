@@ -36,10 +36,8 @@ jobs:
           channels: conda-forge,defaults
           mamba-version: "*"
           environment-file: environment.yml
-          #   These don't seem to be valid options for this action
-          #   See: https://github.com/conda-incubator/setup-miniconda
-          # cache-environment-key: ${{ runner.os }}-env-${{ hashFiles('**/environment.yml') }}
-          # cache-downloads-key: ${{ runner.os }}-downloads-${{ hashFiles('**/environment.yml') }}
+          cache-environment-key: ${{ runner.os }}-env-${{ hashFiles('**/environment.yml') }}
+          cache-downloads-key: ${{ runner.os }}-downloads-${{ hashFiles('**/environment.yml') }}
 
       - name: Start docker containers
         run: |

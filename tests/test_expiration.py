@@ -116,7 +116,7 @@ class TestLiveDataServer:
         assert r[1]["expired"] is True
 
     def test_deleting_expired(self):
-        """Test the purge_expired view"""
+        """Test the purge_expired_data command"""
         command = "docker exec -i live_data_server-livedata-1 bash -ic"
         subcommand = "conda activate livedata && cd app && python manage.py purge_expired_data"
         output = subprocess.check_output([*command.split(" "), subcommand])

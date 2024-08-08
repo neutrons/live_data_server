@@ -40,8 +40,8 @@ docker/compose/local: docker/compose/validate ## compose and start the service l
 clean: ## remove all local compiled Python files
 	rm -f `find . -type f -name '*.py[co]' ` \
 		`find . -type f -name '_version.py'`
-	rm -rf `find . -name __pycache__` \
-		.ruff_cache .pytest_cache *.egg-info
+	rm -rf `find . -name __pycache__ -o -name "*.egg-info"` \
+		.ruff_cache .pytest_cache
 
 .PHONY: check
 .PHONY: first_install
