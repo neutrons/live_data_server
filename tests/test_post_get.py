@@ -88,34 +88,31 @@ class TestLiveDataServer:
         )
         assert http_request.status_code == HTTP_OK
 
-        base_url = f"{TEST_URL}/plots/{instrument}/{run_number}/update/html/"
+        url = f"{TEST_URL}/plots/{instrument}/{run_number}/update/html/"
 
         # test GET request - authenticate with secret key
-        url = f"{base_url}?key={_generate_key(instrument, run_number)}"
-        http_request = requests.get(url)
+        http_request = requests.get(
+            url,
+            headers={"Authorization": _generate_key(instrument, run_number)},
+        )
         assert http_request.status_code == HTTP_OK
         assert http_request.text == files["file"]
 
         # test that getting the json should return not found
         http_request = requests.get(
-            f"{TEST_URL}/plots/{instrument}/{run_number}/update/json/?key={_generate_key(instrument, run_number)}"
+            f"{TEST_URL}/plots/{instrument}/{run_number}/update/json/",
+            headers={"Authorization": _generate_key(instrument, run_number)},
         )
         assert http_request.status_code == HTTP_NOT_FOUND
         assert http_request.text == "No data available for REF_M 12346"
 
         # test GET request - no key
-        url = base_url
-        http_request = requests.get(url)
-        assert http_request.status_code == HTTP_UNAUTHORIZED
-
-        # test GET request - wrong key
-        url = f"{base_url}?key=WRONG-KEY"
         http_request = requests.get(url)
         assert http_request.status_code == HTTP_UNAUTHORIZED
 
         # test GET request - wrong key
         http_request = requests.get(
-            base_url,
+            url,
             headers={"Authorization": "WRONG-KEY"},
         )
         assert http_request.status_code == HTTP_UNAUTHORIZED
