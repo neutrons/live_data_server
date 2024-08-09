@@ -2,6 +2,17 @@
 Configure for Local Debugging and Development
 =============================================
 
+This document describes how to set up the project for local debugging and development.
+
+Prerequisites
+-------------
+- `Docker <https://docs.docker.com/get-docker/>`_
+- `Docker Compose <https://docs.docker.com/compose/install/>`_
+- `Conda <https://docs.conda.io/en/latest/miniconda.html>`_
+
+Setup
+-----
+
 Clone the repository and ``cd`` into the project directory.
 
 Create a conda environment ``livedata``, containing all the dependencies
