@@ -1,4 +1,3 @@
-# standard imports
 import hashlib
 import json
 import os
@@ -14,6 +13,11 @@ HTTP_BAD_REQUEST = requests.status_codes.codes["BAD_REQUEST"]
 
 
 class TestLiveDataServer:
+    # authenticate with username and password
+    username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
+    password = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
+    user_data = {"username": username, "password": password}
+
     @classmethod
     def setup_class(cls):
         """Clean the database before running tests"""
@@ -32,93 +36,90 @@ class TestLiveDataServer:
         conn.close()
 
     def test_post_request(self, data_server):
-        username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
-        monitor_user = {"username": username, "password": os.environ.get("DJANGO_SUPERUSER_PASSWORD")}
-
         # load html plot as autoreduce service
-        file_name = "reflectivity.html"
-        files = {"file": open(data_server.path_to(file_name)).read()}
-        monitor_user["data_id"] = file_name
+        filename = "reflectivity.html"
+        files = {"file": open(data_server.path_to(filename)).read()}
+        request_data = {
+            **self.user_data,
+            "data_id": filename,
+        }
 
-        http_request = requests.post(
-            TEST_URL + "/plots/REF_L/12345/upload_plot_data/", data=monitor_user, files=files, verify=True
+        request = requests.post(
+            f"{TEST_URL}/plots/TEST_INST/12345/upload_plot_data/", data=request_data, files=files, verify=True
         )
-        assert http_request.status_code == HTTP_OK
+        assert request.status_code == HTTP_OK
 
         # load json plot a user "someuser" of the web-reflectivity app
-        file_name = "reflectivity.json"
-        with open(data_server.path_to(file_name), "r") as file_handle:
+        filename = "reflectivity.json"
+        with open(data_server.path_to(filename), "r") as file_handle:
             files = {"file": json.dumps(json.load(file_handle))}
-        monitor_user["data_id"] = file_name
+        request_data["data_id"] = filename
 
-        http_request = requests.post(
-            TEST_URL + "/plots/" + username + "/upload_user_data/", data=monitor_user, files=files, verify=True
+        request = requests.post(
+            f"{TEST_URL}/plots/{self.username}/upload_user_data/", data=request_data, files=files, verify=True
         )
-        assert http_request.status_code == HTTP_OK
+        assert request.status_code == HTTP_OK
 
-        monitor_user.pop("data_id")
         # get all plots for an instrument
-        http_request = requests.post(TEST_URL + "/plots/REF_L/list/", data=monitor_user, files={}, verify=True)
-        assert http_request.status_code == HTTP_OK
+        request = requests.post(f"{TEST_URL}/plots/TEST_INST/list/", data=self.user_data, files={}, verify=True)
+        assert request.status_code == HTTP_OK
 
         # get all plots from someuser
-        http_request = requests.post(
-            TEST_URL + "/plots/" + username + "/list/", data=monitor_user, files={}, verify=True
-        )
-        assert http_request.status_code == HTTP_OK
+        request = requests.post(f"{TEST_URL}/plots/{self.username}/list/", data=self.user_data, files={}, verify=True)
+        assert request.status_code == HTTP_OK
 
     def test_get_request(self, data_server):
         """Test GET request for HTML data like from monitor.sns.gov"""
         instrument = "REF_M"
         run_number = 12346
 
-        # upload the run data using POST (authenticate with username and password)
-        username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
-        monitor_user = {"username": username, "password": os.environ.get("DJANGO_SUPERUSER_PASSWORD")}
         # load html plot as autoreduce service
-        file_name = "reflectivity.html"
-        files = {"file": open(data_server.path_to(file_name)).read()}
-        monitor_user["data_id"] = file_name
+        filename = "reflectivity.html"
+        files = {"file": open(data_server.path_to(filename)).read()}
+        request_data = {
+            **self.user_data,
+            "data_id": filename,
+        }
 
-        http_request = requests.post(
+        request = requests.post(
             f"{TEST_URL}/plots/{instrument}/{run_number}/upload_plot_data/",
-            data=monitor_user,
+            data=request_data,
             files=files,
             verify=True,
         )
-        assert http_request.status_code == HTTP_OK
+        assert request.status_code == HTTP_OK
 
         base_url = f"{TEST_URL}/plots/{instrument}/{run_number}/update/html/"
 
         # test GET request - authenticate with secret key
         url = f"{base_url}?key={_generate_key(instrument, run_number)}"
-        http_request = requests.get(url)
-        assert http_request.status_code == HTTP_OK
-        assert http_request.text == files["file"]
+        request = requests.get(url)
+        assert request.status_code == HTTP_OK
+        assert request.text == files["file"]
 
         # test that getting the json should return not found
-        http_request = requests.get(
+        request = requests.get(
             f"{TEST_URL}/plots/{instrument}/{run_number}/update/json/?key={_generate_key(instrument, run_number)}"
         )
-        assert http_request.status_code == HTTP_NOT_FOUND
-        assert http_request.text == "No data available for REF_M 12346"
+        assert request.status_code == HTTP_NOT_FOUND
+        assert request.text == "No data available for REF_M 12346"
 
         # test GET request - no key
         url = base_url
-        http_request = requests.get(url)
-        assert http_request.status_code == HTTP_UNAUTHORIZED
+        request = requests.get(url)
+        assert request.status_code == HTTP_UNAUTHORIZED
 
         # test GET request - wrong key
         url = f"{base_url}?key=WRONG-KEY"
-        http_request = requests.get(url)
-        assert http_request.status_code == HTTP_UNAUTHORIZED
+        request = requests.get(url)
+        assert request.status_code == HTTP_UNAUTHORIZED
 
         # test GET request - wrong key
-        http_request = requests.get(
+        request = requests.get(
             base_url,
             headers={"Authorization": "WRONG-KEY"},
         )
-        assert http_request.status_code == HTTP_UNAUTHORIZED
+        assert request.status_code == HTTP_UNAUTHORIZED
 
     def test_upload_plot_data_json(self):
         # test that when you upload json you can get back the same stuff
@@ -136,12 +137,12 @@ class TestLiveDataServer:
         assert response.status_code == HTTP_NOT_FOUND
 
         # now upload json data
-        http_request = requests.post(
+        request = requests.post(
             f"{TEST_URL}/plots/{instrument}/{run_number}/upload_plot_data/",
             data=monitor_user,
             files={"file": json.dumps(data)},
         )
-        assert http_request.status_code == HTTP_OK
+        assert request.status_code == HTTP_OK
 
         # check list of data
         response = requests.post(f"{TEST_URL}/plots/{instrument}/list/", data=monitor_user)
@@ -178,19 +179,19 @@ class TestLiveDataServer:
         }
 
         # missing files
-        http_request = requests.post(
+        request = requests.post(
             f"{TEST_URL}/plots/{instrument}/{run_number}/upload_plot_data/",
             data=monitor_user,
         )
-        assert http_request.status_code == HTTP_BAD_REQUEST
+        assert request.status_code == HTTP_BAD_REQUEST
 
         # used filename instead of file in files
-        http_request = requests.post(
+        request = requests.post(
             f"{TEST_URL}/plots/{instrument}/{run_number}/upload_plot_data/",
             data=monitor_user,
             files={"filename": ""},
         )
-        assert http_request.status_code == HTTP_BAD_REQUEST
+        assert request.status_code == HTTP_BAD_REQUEST
 
     def test_unauthorized(self):
         # test get request unauthorized

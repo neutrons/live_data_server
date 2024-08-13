@@ -4,6 +4,7 @@ Definition of views
 
 import json
 import logging
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -12,7 +13,6 @@ from django.shortcuts import get_object_or_404
 from django.utils import dateformat, timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
-
 from plots.models import DataRun, Instrument, PlotData
 
 from . import view_util
@@ -97,11 +97,15 @@ def _store(request, instrument, run_id=None, as_user=False):
         raw_data = request.FILES["file"].read().decode("utf-8")
         data_type_default = PlotData.get_data_type_from_data(raw_data)
         data_type = request.POST.get("data_type", default=data_type_default)
+        expiration_date = request.POST.get(
+            "expiration_date", default=timezone.now() + timedelta(days=settings.LIVE_PLOT_EXPIRATION_TIME)
+        )
+
         if as_user:
             data_id = request.POST.get("data_id", default="")
-            view_util.store_user_data(instrument, data_id, raw_data, data_type)
+            view_util.store_user_data(instrument, data_id, raw_data, data_type, expiration_date)
         else:
-            view_util.store_plot_data(instrument, run_id, raw_data, data_type)
+            view_util.store_plot_data(instrument, run_id, raw_data, data_type, expiration_date)
     else:
         return HttpResponse(status=400)
 
@@ -129,22 +133,27 @@ def upload_user_data(request, user):
 
 @csrf_exempt
 @check_credentials
-def get_data_list(_, instrument):
+def get_data_list(request, instrument):
     """
     Get a list of user data
     """
     instrument_object = get_object_or_404(Instrument, name=instrument.lower())
     data_list = []
+    get_extra = request.POST.get("extra", default=False)
     for item in DataRun.objects.filter(instrument=instrument_object):
-        localtime = timezone.localtime(item.created_on)
-        df = dateformat.DateFormat(localtime)
-        data_list.append(
-            dict(
-                id=item.id,
-                run_number=str(item.run_number),
-                run_id=item.run_id,
-                timestamp=item.created_on.isoformat(),
-                created_on=df.format(settings.DATETIME_FORMAT),
-            )
+        timestamp_local = timezone.localtime(item.created_on)
+        timestamp_formatted = dateformat.DateFormat(timestamp_local).format(settings.DATETIME_FORMAT)
+        data = dict(
+            id=item.id,
+            run_number=str(item.run_number),
+            run_id=item.run_id,
+            timestamp=item.created_on.isoformat(),
+            created_on=timestamp_formatted,
         )
+        if get_extra:
+            expiration_local = timezone.localtime(item.expiration_date)
+            expiration_formatted = dateformat.DateFormat(expiration_local).format(settings.DATETIME_FORMAT)
+            data["expiration_date"] = expiration_formatted
+            data["expired"] = True if expiration_local < timezone.now() else False
+        data_list.append(data)
     return JsonResponse(data_list, safe=False)

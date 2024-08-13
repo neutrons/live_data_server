@@ -4,17 +4,18 @@ Plot data models
 
 import logging
 import sys
+from datetime import timedelta
 
+from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 DATA_TYPES = {"json": 0, "html": 1, "div": 1}
 DATA_TYPE_INFO = {0: {"name": "json"}, 1: {"name": "html"}}
 
 
 class Instrument(models.Model):
-    """
-    Table of instruments
-    """
+    """Table of instruments"""
 
     name = models.CharField(max_length=128, unique=True)
     run_id_type = models.IntegerField(default=0)
@@ -24,25 +25,32 @@ class Instrument(models.Model):
 
 
 class DataRun(models.Model):
-    """
-    Table of runs
+    """Table of runs.
+
+    A run is a collection of plots that are all related to a single data set.
+
+    Attributes:
+        run_number (int): Run number
+        run_id (str): Optional run identifier
+        instrument (Instrument): Instrument object
+        created_on (datetime): Timestamp
+        expiration_date (datetime): Expiration date
     """
 
     run_number = models.IntegerField()
-    # Optional free-form run identifier
     run_id = models.TextField()
-
     instrument = models.ForeignKey(Instrument, on_delete=models.deletion.CASCADE)
     created_on = models.DateTimeField("Timestamp", auto_now_add=True)
+    expiration_date = models.DateTimeField(
+        "Expires", default=timezone.now() + timedelta(days=(settings.LIVE_PLOT_EXPIRATION_TIME))
+    )
 
     def __str__(self):
         return f"{self.instrument}_{self.run_number}_{self.run_id}"
 
 
 class PlotData(models.Model):
-    """
-    Table of plot data. This data can either be json or html
-    """
+    """Table of plot data. This data can either be json or html"""
 
     ## DataRun this run status belongs to
     data_run = models.ForeignKey(DataRun, on_delete=models.deletion.CASCADE)
@@ -60,8 +68,8 @@ class PlotData(models.Model):
         return str(self.data_run)
 
     def is_data_type_valid(self, data_type):
-        """
-        Verify that a given data type matches the stored data
+        """Verify that a given data type matches the stored data
+
         @param data_type: data type to check
         """
         try:
@@ -73,8 +81,8 @@ class PlotData(models.Model):
 
     @classmethod
     def get_data_type_from_data(cls, data):
-        """
-        Inspect the data to guess what type it is.
+        """Inspect the data to guess what type it is.
+
         @param data: block of text to store
         """
         if data.startswith("<div"):
@@ -83,7 +91,5 @@ class PlotData(models.Model):
 
     @classmethod
     def get_data_type_from_string(cls, type_string):
-        """
-        Returns the correct data type ID for a given string representation
-        """
+        """Returns the correct data type ID for a given string representation"""
         return DATA_TYPES.get(type_string, DATA_TYPES["json"])

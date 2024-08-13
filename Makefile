@@ -3,10 +3,12 @@ app_dir := live_data_server
 DJANGO_COMPATIBLE:=$(shell python -c "import django;t=0 if django.VERSION[0]<4 else 1; print(t)")
 DJANGO_VERSION:=$(shell python -c "import django;print(django.__version__)")
 
-# command to run docker compose. change this to be what you have installed
-# this can be overriden on the command line
-# DOCKER_COMPOSE="docker compose" make docker/pruneall
-DOCKER_COMPOSE ?= docker-compose
+ifneq ($(shell docker compose version 2>/dev/null),)
+  DOCKER_COMPOSE=docker compose
+else ifneq ($(shell docker-compose --version 2>/dev/null),)
+  DOCKER_COMPOSE=docker-compose
+endif
+
 
 help:
     # this nifty perl one-liner collects all comments headed by the double "#" symbols next to each target and recycles them as comments
@@ -30,9 +32,16 @@ docker/pruneall: docker/compose/validate  ## stop all containers, then remove al
 docker/compose/validate:  ## validate the version of the docker-compose command. Exits quietly if valid.
 	@./scripts/docker-compose_validate.sh $(DOCKER_COMPOSE)
 
-local/docker/up: docker/compose/validate ## compose and start the service locally
+docker/compose/local: docker/compose/validate ## compose and start the service locally
 	\cp ./config/docker-compose.envlocal.yml docker-compose.yml
 	$(DOCKER_COMPOSE) up --build
+
+.PHONY: clean
+clean: ## remove all local compiled Python files
+	rm -f `find . -type f -name '*.py[co]' ` \
+		`find . -type f -name '_version.py'`
+	rm -rf `find . -name __pycache__ -o -name "*.egg-info"` \
+		.ruff_cache .pytest_cache
 
 .PHONY: check
 .PHONY: first_install
@@ -42,4 +51,4 @@ local/docker/up: docker/compose/validate ## compose and start the service locall
 .PHONY: webapp/core
 .PHONY: docker/compose/validate
 .PHONY: docker/pruneall
-.PHONY: local/docker/up
+.PHONY: docker/compose/local

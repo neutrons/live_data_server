@@ -16,4 +16,5 @@ urlpatterns = [
     ),
     re_path(r"^(?P<user>[\w]+)/upload_user_data/$", views.upload_user_data, name="upload_user_data"),
     re_path(r"^(?P<instrument>[\w]+)/list/$", views.get_data_list, name="get_data_list"),
+    # re_path(r"^(?P<instrument>[\w]+)/list_extra/$", views.get_data_list, name="get_data_list"),
 ]
