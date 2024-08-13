@@ -147,10 +147,17 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "/var/www/livedata/static/"
 
 # Add secret key to settings only if there's a non-empty environment variable with same name
-if "LIVE_PLOT_SECRET_KEY" in os.environ:
-    secret_key = os.environ.get("LIVE_PLOT_SECRET_KEY")
-    if bool(secret_key):
-        LIVE_PLOT_SECRET_KEY = os.environ.get("LIVE_PLOT_SECRET_KEY")
+secret_key = os.environ.get("LIVE_PLOT_SECRET_KEY")
+if secret_key:
+    LIVE_PLOT_SECRET_KEY = secret_key
+
+# Set expiration time for live plots to 3 years if not set
+expiration_time = os.environ.get("LIVE_PLOT_EXPIRATION_TIME")
+if expiration_time:
+    LIVE_PLOT_EXPIRATION_TIME = int(expiration_time)
+else:
+    LIVE_PLOT_EXPIRATION_TIME = 365 * 3
+
 
 # Import local settings if available
 try:

@@ -9,15 +9,10 @@ dependencies = [
 license = { text = "BSD-3" }
 
 [project.urls]
-homepage = "https://livedata-ornl.readthedocs.io"  # if no homepage, use repo url
+homepage = "https://livedata-ornl.readthedocs.io" # if no homepage, use repo url
 
 [build-system]
-requires = [
-  "setuptools >= 40.6.0",
-  "wheel",
-  "toml",
-  "versioningit"
-]
+requires = ["setuptools >= 40.6.0", "wheel", "toml", "versioningit"]
 build-backend = "setuptools.build_meta"
 
 [tool.black]
@@ -43,16 +38,24 @@ where = ["src"]
 exclude = ["tests*", "scripts*", "docs*"]
 
 [tool.pytest.ini_options]
-pythonpath = [
-  ".", "src", "scripts"
-]
+pythonpath = [".", "src", "scripts"]
 testpaths = ["tests"]
 python_files = ["test*.py"]
 
 [tool.ruff]
 line-length = 120
-
-[tool.ruff.lint]
-select = ["A", "ARG","ASYNC","BLE","C90", "E", "F", "I", "N", "UP032", "W"]
+lint.select = [
+  "A",
+  "ARG",
+  "ASYNC",
+  "BLE",
+  "C90",
+  "E",
+  "F",
+  "I",
+  "N",
+  "UP032",
+  "W",
+]
 
 # Add additional 3rd party tool configuration here as needed

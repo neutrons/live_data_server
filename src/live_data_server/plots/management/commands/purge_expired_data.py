@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-
-from ...models import DataRun
+from plots.models import DataRun
 
 
 class Command(BaseCommand):

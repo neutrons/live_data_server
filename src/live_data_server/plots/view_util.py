@@ -6,13 +6,12 @@ import hashlib
 import logging
 import sys
 from datetime import datetime
+from typing import Optional
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils import timezone
-
-# from plots.models import DataRun, Instrument, PlotData
-from .models import DataRun, Instrument, PlotData
+from plots.models import DataRun, Instrument, PlotData
 
 
 def generate_key(instrument, run_id):
@@ -121,7 +120,7 @@ def get_plot_data(instrument, run_id, data_type=None):
     return None
 
 
-def store_user_data(user, data_id, data, data_type, expiration_date: datetime):
+def store_user_data(user, data_id, data, data_type, expiration_date: Optional[datetime] = None):
     """
     Store plot data and associate it to a user identifier
     (a name, not an actual user since users don't log in to this system).
@@ -166,7 +165,7 @@ def store_user_data(user, data_id, data, data_type, expiration_date: datetime):
     plot_data.save()
 
 
-def store_plot_data(instrument, run_id, data, data_type, expiration_date: datetime):
+def store_plot_data(instrument, run_id, data, data_type, expiration_date: Optional[datetime] = None):
     """
     Store plot data
     @param instrument: instrument name

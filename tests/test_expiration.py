@@ -70,7 +70,7 @@ class TestLiveDataServer:
 
         request = requests.post(
             f"{TEST_URL}/plots/{instrument}/list/",
-            data=self.user_data,
+            data={**self.user_data, "extra": True},
         )
         assert request.status_code == HTTP_OK
 
@@ -106,7 +106,7 @@ class TestLiveDataServer:
 
         request = requests.post(
             f"{TEST_URL}/plots/{self.username}/list/",
-            data=self.user_data,
+            data={**self.user_data, "extra": True},
         )
         assert request.status_code == HTTP_OK
 
@@ -124,7 +124,24 @@ class TestLiveDataServer:
         print(output)
 
         # Ensure the above ran and worked
-        r = requests.post(f"{TEST_URL}/plots/get_all_runs/", data=self.user_data)
-        runs = r.json()
-        assert len(runs) == 2
-        assert all(run["expired"] is False for run in runs)
+        conn = psycopg.connect(
+            dbname=os.environ.get("DATABASE_NAME"),
+            user=os.environ.get("DATABASE_USER"),
+            password=os.environ.get("DATABASE_PASS"),
+            port=os.environ.get("DATABASE_PORT"),
+            host="localhost",
+        )
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM plots_datarun")
+        results = cur.fetchall()
+        print(f"Runs after purge: {len(results)}")
+        for i in results:
+            print(i)
+        assert len(results) == 2
+
+        # Plots after purge
+        cur.execute("SELECT * FROM plots_plotdata")
+        results = cur.fetchall()
+        print(f"Plots after purge: {len(results)}")
+        assert len(results) == 2

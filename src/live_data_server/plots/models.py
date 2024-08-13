@@ -6,6 +6,7 @@ import logging
 import sys
 from datetime import timedelta
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -40,7 +41,9 @@ class DataRun(models.Model):
     run_id = models.TextField()
     instrument = models.ForeignKey(Instrument, on_delete=models.deletion.CASCADE)
     created_on = models.DateTimeField("Timestamp", auto_now_add=True)
-    expiration_date = models.DateTimeField("Expires", default=timezone.now() + timedelta(days=(365 * 3)))
+    expiration_date = models.DateTimeField(
+        "Expires", default=timezone.now() + timedelta(days=(settings.LIVE_PLOT_EXPIRATION_TIME))
+    )
 
     def __str__(self):
         return f"{self.instrument}_{self.run_number}_{self.run_id}"
