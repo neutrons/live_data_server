@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import psycopg
 import requests
 
-TEST_URL = "http://127.0.0.1"
+TEST_URL = "http://127.0.0.1:8000"
 HTTP_OK = requests.status_codes.codes["OK"]
 HTTP_UNAUTHORIZED = requests.status_codes.codes["unauthorized"]
 HTTP_NOT_FOUND = requests.status_codes.codes["NOT_FOUND"]
@@ -117,7 +117,7 @@ class TestLiveDataServer:
 
     def test_deleting_expired(self):
         """Test the purge_expired_data command"""
-        command = "docker exec -i live_data_server-livedata-1 bash -ic"
+        command = "docker exec -i live_data_server-django-1 bash -ic"
         subcommand = "conda activate livedata && cd app && coverage run manage.py purge_expired_data"
         # subcommand = "conda activate livedata && cd app && python manage.py purge_expired_data"
         output = subprocess.check_output([*command.split(" "), subcommand])

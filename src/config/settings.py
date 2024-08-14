@@ -40,7 +40,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    "plots.apps.PlotsConfig",
+    "apps.plots",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -61,7 +61,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "live_data_server.urls"
+ROOT_URLCONF = "config.urls"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -81,7 +81,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "live_data_server.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database

@@ -5,7 +5,7 @@ import os
 import psycopg
 import requests
 
-TEST_URL = "http://127.0.0.1"
+TEST_URL = "http://127.0.0.1:8000"
 HTTP_OK = requests.status_codes.codes["OK"]
 HTTP_UNAUTHORIZED = requests.status_codes.codes["unauthorized"]
 HTTP_NOT_FOUND = requests.status_codes.codes["NOT_FOUND"]

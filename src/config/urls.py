@@ -23,5 +23,5 @@ app_name = "live_data_server"
 urlpatterns = [
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^$", RedirectView.as_view(url="/plots/")),
-    re_path(r"^plots/", include("plots.urls", namespace="plots")),
+    re_path(r"^plots/", include("apps.plots.urls", namespace="plots")),
 ]
