@@ -8,10 +8,11 @@ import sys
 from datetime import datetime
 from typing import Optional
 
-from apps.plots.models import DataRun, Instrument, PlotData
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils import timezone
+
+from apps.plots.models import DataRun, Instrument, PlotData
 
 
 def generate_key(instrument, run_id):
