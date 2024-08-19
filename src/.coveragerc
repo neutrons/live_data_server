@@ -1,4 +1,4 @@
 [run]
-source=live_data_server,plots
+source=apps,config
 parallel=True
 relative_files=True
