@@ -41,7 +41,7 @@ jobs:
 
       - name: Start docker containers
         run: |
-          cp ./config/docker-compose.envlocal.yml docker-compose.yml
+          cp ./deploy-config/docker-compose.envlocal.yml docker-compose.yml
           docker compose up --build -d
 
       - name: Sleep, wait for containers to start up
@@ -52,10 +52,10 @@ jobs:
 
       - name: Stop the coverage process
         # Stopping the coverage process allows the code coverage to be written to disk
-        run: docker exec live_data_server-livedata-1 /bin/bash -c "pkill coverage"
+        run: docker exec live_data_server-django-1 /bin/bash -c "pkill coverage"
 
       - name: Copy code coverage out of docker container
-        run: docker cp live_data_server-livedata-1:/var/www/livedata/app /tmp/
+        run: docker cp live_data_server-django-1:/var/www/livedata/app /tmp/
 
       - name: Combine and show code coverage
         shell: bash -l {0}

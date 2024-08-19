@@ -59,7 +59,7 @@ Developer documentation at <https://livedata-ornl.readthedocs.io/en/latest/>
       make docker/compose/local
       ```
 
-      This command will copy `config/docker-compose.envlocal.yml` into `docker-compose.yml` before composing all the services.
+      This command will copy `deploy-config/docker-compose.envlocal.yml` into `docker-compose.yml` before composing all the services.
 
       Type `make help` to learn about other macros available as make targets.
       For instance, `make docker/pruneall` will stop all containers, then remove all containers, images, networks, and volumes.

@@ -33,15 +33,18 @@ docker/compose/validate:  ## validate the version of the docker-compose command.
 	@./scripts/docker-compose_validate.sh $(DOCKER_COMPOSE)
 
 docker/compose/local: docker/compose/validate ## compose and start the service locally
-	\cp ./config/docker-compose.envlocal.yml docker-compose.yml
+	\cp ./deploy-config/docker-compose.envlocal.yml docker-compose.yml
 	$(DOCKER_COMPOSE) up --build
 
 .PHONY: clean
-clean: ## remove all local compiled Python files
-	rm -f `find . -type f -name '*.py[co]' ` \
-		`find . -type f -name '_version.py'`
+clean: ## remove local files from python installation etc.
+	rm -f `find . -type f -name '*.py[co]' -o -name '_version.py'` \
 	rm -rf `find . -name __pycache__ -o -name "*.egg-info"` \
-		.ruff_cache .pytest_cache
+		.ruff_cache \
+		.pytest_cache \
+		.coverage htmlcov \
+		build dist \
+		# docker-compose.yml
 
 .PHONY: check
 .PHONY: first_install
