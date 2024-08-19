@@ -118,8 +118,7 @@ class TestLiveDataServer:
     def test_deleting_expired(self):
         """Test the purge_expired_data command"""
         command = "docker exec -i live_data_server-django-1 bash -ic"
-        # subcommand = "conda activate livedata && cd app && coverage run manage.py purge_expired_data"
-        subcommand = "conda activate livedata && cd app && python manage.py purge_expired_data"
+        subcommand = "conda activate livedata && cd app && coverage run manage.py purge_expired_data"
         output = subprocess.check_output([*command.split(" "), subcommand])
         print(output)
 
