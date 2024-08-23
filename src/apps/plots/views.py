@@ -6,7 +6,6 @@ import json
 import logging
 from datetime import timedelta
 
-from apps.plots.models import DataRun, Instrument, PlotData
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
@@ -14,6 +13,8 @@ from django.shortcuts import get_object_or_404
 from django.utils import dateformat, timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
+
+from apps.plots.models import DataRun, Instrument, PlotData
 
 from . import view_util
 

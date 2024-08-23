@@ -1,5 +1,6 @@
-from apps.plots.models import DataRun, Instrument, PlotData
 from django.contrib import admin
+
+from apps.plots.models import DataRun, Instrument, PlotData
 
 
 class PlotDataAdmin(admin.ModelAdmin):
