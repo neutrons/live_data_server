@@ -83,7 +83,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile
+          file: deploy/django/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ github.repository }}/live_data_server:${{ steps.latest_tag.outputs.latest_tag }}
           push: true
 
@@ -92,6 +92,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile
+          file: deploy/django/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ github.repository }}/live_data_server:${{ steps.tag.outputs.tag }}
           push: true

@@ -41,7 +41,7 @@ jobs:
 
       - name: Start docker containers
         run: |
-          cp ./deploy-config/docker-compose.envlocal.yml docker-compose.yml
+          cp ./deploy/docker-compose.envlocal.yml docker-compose.yml
           docker compose up --build -d
 
       - name: Sleep, wait for containers to start up

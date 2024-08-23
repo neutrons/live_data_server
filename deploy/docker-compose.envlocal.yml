@@ -7,7 +7,7 @@ services:
       - "443:443"
     volumes:
       - web-static:/var/www/livedata/static
-      - ./deploy-config/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
+      - ./deploy/nginx/envlocal.conf:/etc/nginx/conf.d/nginx.conf
     depends_on:
       django:
         condition: service_healthy
@@ -15,7 +15,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: deploy/django/Dockerfile
       network: host
     environment:
       APP_DEBUG: 1  # 0 for False, otherwise will evaluate to True

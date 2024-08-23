@@ -11,7 +11,6 @@ dependencies:
   - psycopg=3.2
   - gunicorn
   - pytest
-  - build
   - versioningit
   - toml
   - pre-commit
