@@ -1,9 +1,13 @@
 #!/bin/sh
 set -e
 
+# start cron, export root env variables
+service cron start
+env >>/etc/environment
+
 # wait for database
 until PGPASSWORD=${DATABASE_PASS} psql -h "${DATABASE_HOST}" -U "${DATABASE_USER}" -d "${DATABASE_NAME}" -c '\q'; do
-  >&2 echo "Postgres is unavailable - sleeping"
+  echo >&2 "Postgres is unavailable - sleeping"
   sleep 1
 done
 

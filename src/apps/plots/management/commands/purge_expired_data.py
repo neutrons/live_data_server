@@ -8,6 +8,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):  # noqa: ARG002
         runs = DataRun.objects.all()
+        expired_runs = 0
         for run in runs:
             if run.expiration_date < timezone.now():
+                expired_runs += 1
                 run.delete()
+        self.stdout.write(self.style.SUCCESS(f"Deleted {expired_runs} expired runs"))

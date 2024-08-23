@@ -54,7 +54,7 @@ After the secrets are set, you can start the server with:
 
   make docker/compose/local
 
-This command will copy ``deploy-config/docker-compose.envlocal.yml`` into ``./docker-compose.yml`` before composing all the services.
+This command will copy ``deploy/docker-compose.envlocal.yml`` into ``./docker-compose.yml`` before composing all the services.
 
 | Run ``make help`` to learn about other macros available as make targets.
 | For instance, ``make docker/pruneall`` will stop all containers, then remove all containers, images, networks, and volumes.

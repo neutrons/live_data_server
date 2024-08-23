@@ -24,9 +24,9 @@ The logs indicate a problem with the certificate files.
 An additional test is to substitute the
 `nginx.conf file for the testing environment <https://code.ornl.gov/sns-hfir-scse/deployments/livedata-deploy/-/blob/main/test/nginx.conf?ref_type=heads>`_
 with the
-`local environment one <https://github.com/neutrons/live_data_server/blob/next/deploy-config/nginx/envlocal.conf>`_,
+`local environment one <https://github.com/neutrons/live_data_server/blob/next/deploy/nginx/envlocal.conf>`_,
 which does not contain SSL certificates. Don't forget to change
-`the server name <https://github.com/neutrons/live_data_server/blob/next/deploy-config/nginx/envlocal.conf#L4>`_
+`the server name <https://github.com/neutrons/live_data_server/blob/next/deploy/nginx/envlocal.conf#L4>`_
 from `"localhost"` to `"testfixture02-test.ornl.gov"`.
 Redeploy after this. If the  http://testfixture02-test.ornl.gov/admin (notice the `http` instead of `https`) app is
 served now, then it's a problem of the secure connection.
