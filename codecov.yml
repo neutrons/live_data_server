@@ -8,3 +8,5 @@ coverage:
       default:
         target: 80%
         threshold: 10%
+ignore:
+  - "src/apps/plots/migrations"
