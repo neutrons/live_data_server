@@ -8,8 +8,7 @@ RUN apt-get update -y && \
 
 # Set up cron job to purge expired data once a month
 COPY scripts/periodic-purge.sh /var/opt/
-# RUN echo "0 0 1 * * /var/opt/periodic-purge.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/root && \
-RUN echo "* * * * * /var/opt/periodic-purge.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/root && \
+RUN echo "0 0 1 * * /var/opt/periodic-purge.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/root && \
     chmod 0644 /etc/cron.d/root && \
     crontab /etc/cron.d/root && \
     touch /var/log/cron.log
