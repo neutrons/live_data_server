@@ -87,8 +87,8 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ github.repository }}/live_data_server:${{ steps.latest_tag.outputs.latest_tag }}
           push: true
 
-      - name: Push version tag only for main branch
-        if: github.ref == 'refs/heads/main'
+      - name: Push version tag for branches qa and main
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/qa'
         uses: docker/build-push-action@v6
         with:
           context: .
