@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import migrations, models
 
 
-def set_expiration_date(apps, schema_editor):
+def set_expiration_date(apps, _):
     DataRun = apps.get_model("plots", "DataRun")
     for run in DataRun.objects.all():
         if run.run_number == 0:

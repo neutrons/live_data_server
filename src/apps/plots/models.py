@@ -41,7 +41,9 @@ class DataRun(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.deletion.CASCADE)
     created_on = models.DateTimeField("Timestamp", auto_now_add=True)
     expiration_date = models.DateTimeField("Expires", default=None, null=True, blank=True)
-    # expiration_date = models.DateTimeField("Expires", created_on + timedelta(days=(settings.LIVE_PLOT_EXPIRATION_TIME)))
+    # expiration_date = models.DateTimeField(
+    #   "Expires", created_on + timedelta(days=(settings.LIVE_PLOT_EXPIRATION_TIME))
+    # )
 
     def clean(self):
         if self.expiration_date is None:
