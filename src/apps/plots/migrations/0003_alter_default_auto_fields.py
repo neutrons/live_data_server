@@ -5,7 +5,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("plots", "0002_datarun_expiration_date"),
+        ("plots", "0001_initial"),
+        # ("plots", "0002_datarun_expiration_date"),
     ]
 
     operations = [

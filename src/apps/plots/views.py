@@ -99,7 +99,8 @@ def _store(request, instrument, run_id=None, as_user=False):
         data_type_default = PlotData.get_data_type_from_data(raw_data)
         data_type = request.POST.get("data_type", default=data_type_default)
         expiration_date = request.POST.get(
-            "expiration_date", default=timezone.now() + timedelta(days=settings.LIVE_PLOT_EXPIRATION_TIME)
+            "expiration_date",
+            default=timezone.now() + timedelta(days=365*100 if as_user else settings.LIVE_PLOT_EXPIRATION_TIME),
         )
 
         if as_user:
