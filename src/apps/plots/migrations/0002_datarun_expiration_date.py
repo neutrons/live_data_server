@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             model_name="datarun",
             name="expiration_date",
             field=models.DateTimeField(
-                default=datetime.datetime(2027, 8, 8, 18, 55, 41, 999298, tzinfo=datetime.timezone.utc),
+                default=None,
                 verbose_name="Expires",
             ),
         ),
