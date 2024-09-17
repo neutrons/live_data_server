@@ -10,7 +10,7 @@ def set_expiration_date(apps, schema_editor):
     DataRun = apps.get_model("plots", "DataRun")
     for run in DataRun.objects.all():
         if run.run_number == 0:
-            run.expiration_date = run.created_on + datetime.timedelta(days=365*100)
+            run.expiration_date = run.created_on + datetime.timedelta(days=365 * 100)
         else:
             run.expiration_date = run.created_on + datetime.timedelta(days=settings.LIVE_PLOT_EXPIRATION_TIME)
         run.save()
