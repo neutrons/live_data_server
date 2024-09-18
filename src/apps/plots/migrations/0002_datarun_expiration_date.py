@@ -4,6 +4,7 @@ import datetime
 
 from django.conf import settings
 from django.db import migrations, models
+from django.utils import timezone
 
 from config.instruments import Instruments
 
@@ -14,7 +15,7 @@ def set_expiration_date(apps, _):
         if Instruments.has_value(run.instrument.name):
             run.expiration_date = run.created_on + datetime.timedelta(days=settings.LIVE_PLOT_EXPIRATION_TIME)
         else:
-            run.expiration_date = run.created_on + datetime.timedelta(days=365 * 100)
+            run.expiration_date = timezone.datetime(2100, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
         run.save()
 
 
