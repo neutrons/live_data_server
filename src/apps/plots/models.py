@@ -8,6 +8,9 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
+
+from config.instruments import Instruments
 
 DATA_TYPES = {"json": 0, "html": 1, "div": 1}
 DATA_TYPE_INFO = {0: {"name": "json"}, 1: {"name": "html"}}
@@ -44,7 +47,10 @@ class DataRun(models.Model):
 
     def clean(self):
         if self.expiration_date is None:
-            self.expiration_date = self.created_on + timedelta(days=settings.LIVE_PLOT_EXPIRATION_TIME)
+            if Instruments.has_value(self.instrument.name):
+                self.expiration_date = self.created_on + timedelta(days=settings.LIVE_PLOT_EXPIRATION_TIME)
+            else:
+                self.expiration_date = timezone.datetime(2100, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
 
     def __str__(self):
         return f"{self.instrument}_{self.run_number}_{self.run_id}"
