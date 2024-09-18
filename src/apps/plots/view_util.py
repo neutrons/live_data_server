@@ -144,10 +144,10 @@ def store_user_data(user, data_id, data, data_type, expiration_date: Optional[da
         run_obj.run_number = 0
         run_obj.run_id = data_id
         run_obj.expiration_date = expiration_date
+        # Save run object to generate id (primary key)
         run_obj.save()
-        # Since user data have no run number, force the run number to be the PK,
-        # which is unique and will allow user to retrieve the data like normal
-        # instrument data.
+        # User data has no run number, use the unique id as the run number
+        # so that the user can retrieve the data like normal instrument data
         run_obj.run_number = run_obj.id
         run_obj.save()
 
