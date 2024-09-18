@@ -28,10 +28,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="datarun",
             name="expiration_date",
-            field=models.DateTimeField(
-                default=None,
-                verbose_name="Expires",
-            ),
+            field=models.DateTimeField(default=None, verbose_name="Expires"),
         ),
         migrations.RunPython(set_expiration_date),
     ]
