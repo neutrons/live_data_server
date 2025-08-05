@@ -67,3 +67,6 @@ target/
 
 # Ruff cache
 .ruff_cache
+# pixi environments
+.pixi/*
+!.pixi/config.toml
