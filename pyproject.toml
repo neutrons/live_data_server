@@ -71,6 +71,7 @@ channels = [
 preview = ["pixi-build"]
 
 [tool.pixi.dependencies]
+python = ">=3.6"
 django = "=4.2"
 django-cors-headers = "=4.4"
 psycopg = "=3.2"
