@@ -12,3 +12,6 @@ sphinx:
 
 conda:
   environment: environment.yml
+
+pull_requests:
+  build: true
