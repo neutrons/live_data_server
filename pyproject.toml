@@ -18,6 +18,9 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 source = "versioningit"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/live_data_server"]
+
 [tool.black]
 line-length = 119
 
@@ -101,6 +104,9 @@ pytest = ">=8.4.1"
 [tool.pixi.feature.docs.dependencies]
 sphinx = ">=8"
 sphinx_rtd_theme = ">=3.0.1"
+
+[tool.pixi.feature.docs.pypi-dependencies]
+live_data_server = { path = ".", editable = true }
 
 [tool.pixi.feature.deploy.dependencies]
 gunicorn = ">=23"
