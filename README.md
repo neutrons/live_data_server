@@ -95,7 +95,7 @@ Additional documentation is available in the `docs` directory. To build the docu
 run the following command from within directory `docs/`:
 
 ```bash
-make html
+pixi run -e docs make html
 ```
 
 The documentation will be built in the `docs/_build/html` directory. To view the documentation,
