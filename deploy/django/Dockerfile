@@ -1,10 +1,10 @@
-FROM continuumio/miniconda3:23.10.0-1 AS base
+FROM ghcr.io/prefix-dev/pixi:0.50.2-jammy AS base
 
 ### System dependencies and cron job setup
 RUN apt-get update -y && \
     # apt upgrade -y && \
     apt-get install -y \
-    vim cron
+    vim cron wget
 
 # Set up cron job to purge expired data once a month
 COPY scripts/periodic-purge.sh /var/opt/
@@ -16,8 +16,9 @@ RUN echo "0 0 1 * * /var/opt/periodic-purge.sh >> /var/log/cron.log 2>&1" > /etc
 ### Environment setup
 FROM base AS build
 
-COPY environment.yml .
-RUN conda env create
+COPY pixi.lock .
+COPY pyproject.toml .
+RUN pixi install --locked -e deploy
 
 WORKDIR /var/www/livedata
 COPY src app
@@ -28,4 +29,4 @@ FROM build AS final
 
 COPY deploy/django/docker-entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/docker-entrypoint.sh
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "livedata", "/usr/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["pixi", "run" , "-e", "deploy", "/usr/bin/docker-entrypoint.sh"]

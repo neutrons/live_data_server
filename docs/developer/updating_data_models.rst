@@ -24,9 +24,8 @@ From within the Django app Docker container:
 
    # or if you are not in the container
    docker exec -i live_data_server-django-1 bash -ic '
-      conda activate livedata
       cd app
-      python manage.py migrate
+      pixi run -e deploy python manage.py migrate
       '
 
 If the migration(s) are not correct, you can delete them and start again:
