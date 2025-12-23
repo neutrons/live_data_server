@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 
-from apps.plots.models import DATA_TYPES, DataRun, Instrument, PlotData
+from apps.plots.models import DATA_TYPES
 
 from . import view_util
 

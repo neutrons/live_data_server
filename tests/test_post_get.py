@@ -1,5 +1,4 @@
 import hashlib
-import json
 import os
 
 import psycopg
@@ -136,11 +135,7 @@ class TestLiveDataServer:
 
         # Upload should work with authenticated session
         files = {"file": "<div>Test</div>"}
-        response = session.post(
-            f"{TEST_URL}/plots/TEST_INST/888/upload_plot_data/",
-            data=monitor_user,
-            files=files
-        )
+        response = session.post(f"{TEST_URL}/plots/TEST_INST/888/upload_plot_data/", data=monitor_user, files=files)
         assert response.status_code == HTTP_OK
 
 
