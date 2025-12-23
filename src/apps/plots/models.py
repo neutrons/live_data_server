@@ -12,8 +12,8 @@ from django.utils import timezone
 
 from config.instruments import Instruments
 
-DATA_TYPES = {"json": 0, "html": 1, "div": 1}
-DATA_TYPE_INFO = {0: {"name": "json"}, 1: {"name": "html"}}
+DATA_TYPES = {"html": 1}
+DATA_TYPE_INFO = {1: {"name": "html"}}
 
 
 class Instrument(models.Model):
@@ -85,18 +85,3 @@ class PlotData(models.Model):
         except ValueError:
             logging.error("Could not verify data type: %s", sys.exc_value)
             return False
-
-    @classmethod
-    def get_data_type_from_data(cls, data):
-        """Inspect the data to guess what type it is.
-
-        @param data: block of text to store
-        """
-        if data.startswith("<div"):
-            return DATA_TYPES["html"]
-        return DATA_TYPES["json"]
-
-    @classmethod
-    def get_data_type_from_string(cls, type_string):
-        """Returns the correct data type ID for a given string representation"""
-        return DATA_TYPES.get(type_string, DATA_TYPES["json"])
