@@ -140,10 +140,7 @@ class TestLiveDataServer:
 
         # Verify session authentication persists without re-providing credentials
         files = {"file": "<div>Second upload</div>"}
-        response = session.post(
-            f"{TEST_URL}/plots/TEST_INST/889/upload_plot_data/",
-            files=files
-        )
+        response = session.post(f"{TEST_URL}/plots/TEST_INST/889/upload_plot_data/", files=files)
         assert response.status_code == HTTP_OK
 
 
