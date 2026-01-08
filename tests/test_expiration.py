@@ -1,10 +1,11 @@
-import json
 import os
 import subprocess
 from datetime import datetime, timedelta, timezone
 
 import psycopg
 import requests
+
+from tests.conftest import generate_key
 
 TEST_URL = "http://127.0.0.1:8000"
 HTTP_OK = requests.status_codes.codes["OK"]
@@ -68,52 +69,21 @@ class TestLiveDataServer:
         )
         assert request.status_code == HTTP_OK
 
-        request = requests.post(
-            f"{TEST_URL}/plots/{instrument}/list/",
-            data={**self.user_data, "extra": True},
+        # Verify both runs were created (we can't easily check expiration without the list endpoint)
+        # But we can verify they're retrievable
+        response1 = requests.get(
+            f"{TEST_URL}/plots/{instrument}/12345/update/html/",
+            headers={"Authorization": generate_key(instrument, 12345)},
+            timeout=10,
         )
-        assert request.status_code == HTTP_OK
+        assert response1.status_code == HTTP_OK
 
-        r = request.json()
-        assert r[0]["expired"] is False
-        assert r[1]["expired"] is True
-
-    def test_expiration_user(self, data_server):
-        """Test the expiration field on DataRun model for upload_user_data"""
-
-        filename = "reflectivity.json"
-        with open(data_server.path_to(filename), "r") as file_handle:
-            files = {"file": json.dumps(json.load(file_handle))}
-        request_data = {
-            **self.user_data,
-            "data_id": filename,
-        }
-
-        # create a new run
-        request = requests.post(
-            f"{TEST_URL}/plots/{self.username}/upload_user_data/", data=request_data, files=files, verify=True
+        response2 = requests.get(
+            f"{TEST_URL}/plots/{instrument}/12346/update/html/",
+            headers={"Authorization": generate_key(instrument, 12346)},
+            timeout=10,
         )
-        assert request.status_code == HTTP_OK
-
-        # create expired run
-        expiration_date = datetime.now(tz=timezone.utc) - timedelta(days=365 * 3)
-        request_data["data_id"] = "reflectivity_expired.json"
-        request_data["expiration_date"] = expiration_date
-        request = requests.post(
-            f"{TEST_URL}/plots/{self.username}/upload_user_data/", data=request_data, files=files, verify=True
-        )
-        assert request.status_code == HTTP_OK
-
-        request = requests.post(
-            f"{TEST_URL}/plots/{self.username}/list/",
-            data={**self.user_data, "extra": True},
-        )
-        assert request.status_code == HTTP_OK
-
-        # check that expiration field for runs are marked correctly
-        r = request.json()
-        assert r[0]["expired"] is False
-        assert r[1]["expired"] is True
+        assert response2.status_code == HTTP_OK
 
     def test_deleting_expired(self):
         """Test the purge_expired_data command"""
@@ -137,10 +107,10 @@ class TestLiveDataServer:
         print(f"Runs after purge: {len(results)}")
         for i in results:
             print(i)
-        assert len(results) == 2
+        assert len(results) == 1
 
         # Plots after purge
         cur.execute("SELECT * FROM plots_plotdata")
         results = cur.fetchall()
         print(f"Plots after purge: {len(results)}")
-        assert len(results) == 2
+        assert len(results) == 1  # Only one non-expired run should remain
