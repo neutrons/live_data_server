@@ -57,16 +57,16 @@ class DataRun(models.Model):
 
 
 class PlotData(models.Model):
-    """Table of plot data. This data can either be json or html"""
+    """Table of plot data containing HTML content"""
 
     ## DataRun this run status belongs to
     data_run = models.ForeignKey(DataRun, on_delete=models.deletion.CASCADE)
     ## Data type:
     ##    type = 100 for live data, 0 static reduced.
-    ##    type += 1 for HTML, 0 for JSON
+    ##    type += 1 for HTML
     data_type = models.IntegerField()
 
-    ## JSON/HTML data
+    ## HTML data
     data = models.TextField()
 
     timestamp = models.DateTimeField("Timestamp")

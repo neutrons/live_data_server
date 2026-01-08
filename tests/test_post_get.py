@@ -4,6 +4,8 @@ import os
 import psycopg
 import requests
 
+from tests.conftest import generate_key
+
 TEST_URL = "http://127.0.0.1:8000"
 HTTP_OK = requests.status_codes.codes["OK"]
 HTTP_UNAUTHORIZED = requests.status_codes.codes["unauthorized"]
@@ -72,7 +74,7 @@ class TestLiveDataServer:
         base_url = f"{TEST_URL}/plots/{instrument}/{run_number}/update/html/"
 
         # test GET request - authenticate with secret key
-        url = f"{base_url}?key={_generate_key(instrument, run_number)}"
+        url = f"{base_url}?key={generate_key(instrument, run_number)}"
         request = requests.get(url)
         assert request.status_code == HTTP_OK
         assert request.text == files["file"]
@@ -142,17 +144,3 @@ class TestLiveDataServer:
         files = {"file": "<div>Second upload</div>"}
         response = session.post(f"{TEST_URL}/plots/TEST_INST/889/upload_plot_data/", files=files)
         assert response.status_code == HTTP_OK
-
-
-def _generate_key(instrument, run_id):
-    """
-    Generate a secret key for a run on a given instrument
-    Used to simulate clients sending GET-requests using a secret key
-    @param instrument: instrument name
-    @param run_id: run number
-    """
-    secret_key = os.environ.get("LIVE_PLOT_SECRET_KEY")
-    if secret_key is None or len(secret_key) == 0:
-        return None
-
-    return hashlib.sha1(f"{instrument.upper()}{secret_key}{run_id}".encode("utf-8")).hexdigest()

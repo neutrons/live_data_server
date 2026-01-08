@@ -1,10 +1,11 @@
-import hashlib
 import os
 import subprocess
 from datetime import datetime, timedelta, timezone
 
 import psycopg
 import requests
+
+from tests.conftest import generate_key
 
 TEST_URL = "http://127.0.0.1:8000"
 HTTP_OK = requests.status_codes.codes["OK"]
@@ -72,13 +73,15 @@ class TestLiveDataServer:
         # But we can verify they're retrievable
         response1 = requests.get(
             f"{TEST_URL}/plots/{instrument}/12345/update/html/",
-            headers={"Authorization": _generate_key(instrument, 12345)},
+            headers={"Authorization": generate_key(instrument, 12345)},
+            timeout=10,
         )
         assert response1.status_code == HTTP_OK
 
         response2 = requests.get(
             f"{TEST_URL}/plots/{instrument}/12346/update/html/",
-            headers={"Authorization": _generate_key(instrument, 12346)},
+            headers={"Authorization": generate_key(instrument, 12346)},
+            timeout=10,
         )
         assert response2.status_code == HTTP_OK
 
@@ -111,17 +114,3 @@ class TestLiveDataServer:
         results = cur.fetchall()
         print(f"Plots after purge: {len(results)}")
         assert len(results) == 1  # Only one non-expired run should remain
-
-
-def _generate_key(instrument, run_id):
-    """
-    Generate a secret key for a run on a given instrument
-    Used to simulate clients sending GET-requests using a secret key
-    @param instrument: instrument name
-    @param run_id: run number
-    """
-    secret_key = os.environ.get("LIVE_PLOT_SECRET_KEY")
-    if secret_key is None or len(secret_key) == 0:
-        return None
-
-    return hashlib.sha1(f"{instrument.upper()}{secret_key}{run_id}".encode("utf-8")).hexdigest()
