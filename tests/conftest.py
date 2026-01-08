@@ -20,10 +20,15 @@ def data_server():
 
         @property
         def directory(self):
+            """Directory where to find the data files"""
             return self._directory
 
-        def path_to(self, filename):
-            return os.path.join(self._directory, filename)
+        def path_to(self, basename):
+            """Absolute path to a data file"""
+            file_path = os.path.join(self._directory, basename)
+            if not os.path.isfile(file_path):
+                raise IOError(f"File {basename} not found in data directory {self._directory}")
+            return file_path
 
     return _DataServe()
 
@@ -40,15 +45,3 @@ def generate_key(instrument, run_id):
         return None
 
     return hashlib.sha1(f"{instrument.upper()}{secret_key}{run_id}".encode("utf-8")).hexdigest()
-        def directory(self):
-            """Directory where to find the data files"""
-            return self._directory
-
-        def path_to(self, basename):
-            """Absolute path to a data file"""
-            file_path = os.path.join(self._directory, basename)
-            if not os.path.isfile(file_path):
-                raise IOError(f"File {basename} not found in data directory {self._directory}")
-            return file_path
-
-    return _DataServe()
