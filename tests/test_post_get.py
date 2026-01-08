@@ -138,6 +138,14 @@ class TestLiveDataServer:
         response = session.post(f"{TEST_URL}/plots/TEST_INST/888/upload_plot_data/", data=monitor_user, files=files)
         assert response.status_code == HTTP_OK
 
+        # Verify session authentication persists without re-providing credentials
+        files = {"file": "<div>Second upload</div>"}
+        response = session.post(
+            f"{TEST_URL}/plots/TEST_INST/889/upload_plot_data/",
+            files=files
+        )
+        assert response.status_code == HTTP_OK
+
 
 def _generate_key(instrument, run_id):
     """
