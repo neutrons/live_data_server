@@ -8,19 +8,19 @@ Prerequisites
 -------------
 - `Docker <https://docs.docker.com/get-docker/>`_
 - `Docker Compose <https://docs.docker.com/compose/install/>`_
-- `Conda <https://docs.conda.io/en/latest/miniconda.html>`_
+- `Pixi <https://pixi.sh>`_
 
 Setup
 -----
 
 Clone the repository and ``cd`` into the project directory.
 
-Create a conda environment ``livedata``, containing all the dependencies
+Create a pixi environment ``live_data_server``, containing all the dependencies
 
 .. code-block:: python
 
-  conda env create -f environment.yml
-  conda activate livedata
+  pixi install
+  pixi shell
 
 To deploy this application locally, you will need to set a number of environment variables,
 for example (bash):

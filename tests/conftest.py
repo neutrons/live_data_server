@@ -1,3 +1,4 @@
+import hashlib
 import os
 import sys
 
@@ -30,3 +31,17 @@ def data_server():
             return file_path
 
     return _DataServe()
+
+
+def generate_key(instrument, run_id):
+    """
+    Generate a secret key for a run on a given instrument
+    Used to simulate clients sending GET-requests using a secret key
+    @param instrument: instrument name
+    @param run_id: run number
+    """
+    secret_key = os.environ.get("LIVE_PLOT_SECRET_KEY")
+    if secret_key is None or len(secret_key) == 0:
+        return None
+
+    return hashlib.sha1(f"{instrument.upper()}{secret_key}{run_id}".encode("utf-8")).hexdigest()
