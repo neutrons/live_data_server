@@ -31,7 +31,7 @@ jobs:
       - name: Create tag version
         id: tag
         run: |
-          echo "tag=$(versioningit)" >> $GITHUB_OUTPUT
+          echo "tag=$(pixi run versioningit)" >> $GITHUB_OUTPUT
 
       - name: Create latest tag version
         id: latest_tag
