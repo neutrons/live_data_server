@@ -7,11 +7,6 @@ on:
       - next
       - qa
       - main
-  pull_request:
-    branches:
-      - next
-      - qa
-      - main
 
 env:
   # Use docker.io for Docker Hub if empty
