@@ -104,7 +104,7 @@ def get_or_create_run(
     return run_obj
 
 
-def get_plot_data(instrument, run_id, data_type=None):
+def get_plot_data(instrument, run_id):
     """
     Get plot data for requested instrument and run number
     @param instrument: instrument name
@@ -112,58 +112,9 @@ def get_plot_data(instrument, run_id, data_type=None):
     """
     run_obj = get_or_create_run(instrument, run_id, create=False)
     plot_data_list = PlotData.objects.filter(data_run=run_obj)
-    for plot in plot_data_list:
-        if data_type is not None:
-            if plot.is_data_type_valid(data_type):
-                return plot
-        else:
-            return plot
+    if len(plot_data_list) > 0:
+        return plot_data_list[0]
     return None
-
-
-def store_user_data(user, data_id, data, data_type, expiration_date: Optional[datetime] = None):
-    """
-    Store plot data and associate it to a user identifier
-    (a name, not an actual user since users don't log in to this system).
-    """
-    # Get or create the instrument
-    instrument_list = Instrument.objects.filter(name=user.lower())
-    if len(instrument_list) > 0:
-        instrument_obj = instrument_list[0]
-    else:
-        instrument_obj = Instrument()
-        instrument_obj.name = user.lower()
-        instrument_obj.save()
-
-    run_list = DataRun.objects.filter(instrument=instrument_obj, run_id=data_id)
-    if len(run_list) > 0:
-        run_obj = run_list.latest("created_on")
-    else:
-        run_obj = DataRun()
-        run_obj.instrument = instrument_obj
-        run_obj.run_number = 0
-        run_obj.run_id = data_id
-        run_obj.expiration_date = expiration_date
-        run_obj.save()
-        # Since user data have no run number, force the run number to be the PK,
-        # which is unique and will allow user to retrieve the data like normal
-        # instrument data.
-        run_obj.run_number = run_obj.id
-        run_obj.save()
-
-    # Look for a data file and treat it differently
-    data_entries = PlotData.objects.filter(data_run=run_obj)
-    if len(data_entries) > 0:
-        plot_data = data_entries[0]
-    else:
-        # No entry was found, create one
-        plot_data = PlotData()
-        plot_data.data_run = run_obj
-
-    plot_data.data = data
-    plot_data.data_type = data_type
-    plot_data.timestamp = timezone.now()
-    plot_data.save()
 
 
 def store_plot_data(instrument, run_id, data, data_type, expiration_date: Optional[datetime] = None):

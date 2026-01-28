@@ -13,7 +13,7 @@ Developer documentation at <https://livedata-ornl.readthedocs.io/en/latest/>
 
 ### Dependencies
 
-- [Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) / [Mamba/Miniforge](https://github.com/conda-forge/miniforge)
+- [Pixi](https://pixi.sh/latest/installation/)
 - [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/)
 - [direnv](https://direnv.net/) (optional)
 
@@ -21,11 +21,11 @@ Developer documentation at <https://livedata-ornl.readthedocs.io/en/latest/>
 
 1.  Clone the repository and `cd` into the project directory.
 
-1.  Create a conda environment `livedata`, containing all the dependencies
+1.  Create a pixi environment `live_data_server`, containing all the dependencies
 
     ```python
-    conda env create -f environment.yml
-    conda activate livedata
+    pixi install
+    pixi shell
     ```
 
 1.  To deploy this application locally, you will need to set a number of environment variables,
@@ -69,8 +69,8 @@ Developer documentation at <https://livedata-ornl.readthedocs.io/en/latest/>
 After the setup, with the server running, you can test your setup by running `pytest`:
 
 ```bash
-pytest tests/test_post_get.py
-# or simply
+pixi run test
+# or
 pytest
 ```
 
@@ -95,7 +95,7 @@ Additional documentation is available in the `docs` directory. To build the docu
 run the following command from within directory `docs/`:
 
 ```bash
-make html
+pixi run -e docs make html
 ```
 
 The documentation will be built in the `docs/_build/html` directory. To view the documentation,

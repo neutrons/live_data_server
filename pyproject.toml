@@ -12,8 +12,14 @@ license = { text = "BSD-3" }
 homepage = "https://livedata-ornl.readthedocs.io" # if no homepage, use repo url
 
 [build-system]
-requires = ["setuptools >= 40.6.0", "wheel", "toml", "versioningit"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "versioningit"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "versioningit"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/live_data_server"]
 
 [tool.black]
 line-length = 119
@@ -58,4 +64,50 @@ lint.select = [
   "W",
 ]
 
-# Add additional 3rd party tool configuration here as needed
+[tool.pixi.workspace]
+platforms = ["linux-64"]
+channels = [
+  "conda-forge",
+  "https://prefix.dev/pixi-build-backends",
+]
+# Required until the build feature becomes stable
+preview = ["pixi-build"]
+
+[tool.pixi.dependencies]
+python = ">=3.6"
+django = "=4.2"
+django-cors-headers = "=4.4"
+psycopg = "=3.2"
+coverage = ">=7"
+
+[tool.pixi.tasks]
+test = "python -m pytest tests"
+
+[tool.pixi.environments]
+default = { features = [
+  "dev",
+  "docs",
+  "test",
+], solve-group = "default" }
+docs = { features = ["docs"]}
+deploy = { features = ["deploy"]}
+
+
+[tool.pixi.feature.dev.dependencies]
+pre-commit = ">=4.2.0"
+versioningit = ">=3.2.0"
+ruff = "*"
+
+[tool.pixi.feature.test.dependencies]
+pytest = ">=8.4.1"
+
+[tool.pixi.feature.docs.dependencies]
+sphinx = ">=8"
+sphinx_rtd_theme = ">=3.0.1"
+
+[tool.pixi.feature.docs.pypi-dependencies]
+live_data_server = { path = ".", editable = true }
+
+[tool.pixi.feature.deploy.dependencies]
+gunicorn = ">=23"
+postgresql = "=16"
