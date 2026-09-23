@@ -26,7 +26,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Pixi
-        uses: prefix-dev/setup-pixi@v0.9.5
+        uses: prefix-dev/setup-pixi@v0.10.2
 
       - name: Create tag version
         id: tag
