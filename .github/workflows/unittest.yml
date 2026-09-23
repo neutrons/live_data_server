@@ -40,8 +40,10 @@ jobs:
         run: pixi run test
 
       - name: Stop the coverage process
-        # Stopping the coverage process allows the code coverage to be written to disk
-        run: docker exec live_data_server-django-1 /bin/bash -c "pkill coverage"
+        # Stopping the coverage process allows the code coverage to be written to disk.
+        # Match on the full command line: the coverage console script execs the python
+        # binary directly, so the process name is "python3.x" rather than "coverage".
+        run: docker exec live_data_server-django-1 pkill -f coverage
 
       - name: Copy code coverage out of docker container
         run: docker cp live_data_server-django-1:/var/www/livedata/app /tmp/
