@@ -56,10 +56,15 @@ Developer documentation at <https://livedata-ornl.readthedocs.io/en/latest/>
 1.  After the secrets are set, type in the terminal shell:
 
       ```bash
-      make docker/compose/local
+      pixi run docker-up
       ```
 
-      This command will copy `deploy/docker-compose.envlocal.yml` into `docker-compose.yml` before composing all the services.
+      This task copies `deploy/docker-compose.envlocal.yml` into `docker-compose.yml`, builds the images and starts all the
+      services in the background, returning once they report healthy.
+      It is the same task that CI runs, so the local containers match the ones the unit tests run against.
+
+      Stop and remove the containers again with `pixi run docker-down`, and follow the logs with `docker compose logs -f`.
+      To run the services in the foreground instead, use `make docker/compose/local`.
 
       Type `make help` to learn about other macros available as make targets.
       For instance, `make docker/pruneall` will stop all containers, then remove all containers, images, networks, and volumes.

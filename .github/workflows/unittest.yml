@@ -29,12 +29,7 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.10.2
 
       - name: Start docker containers
-        run: |
-          cp ./deploy/docker-compose.envlocal.yml docker-compose.yml
-          docker compose up --build -d
-
-      - name: Sleep, wait for containers to start up
-        run: sleep 30
+        run: pixi run docker-up
 
       - name: Run unit tests
         run: pixi run test
@@ -58,7 +53,7 @@ jobs:
 
       - name: Bring down docker containers completely now
         # This will completely remove the containers
-        run: docker compose down
+        run: pixi run docker-down
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7
