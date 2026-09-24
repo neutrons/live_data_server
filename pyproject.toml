@@ -83,6 +83,14 @@ coverage = ">=7"
 [tool.pixi.tasks]
 test = "python -m pytest tests"
 
+[tool.pixi.tasks.docker-up]
+description = "Copy the local compose file into place and start the containers, waiting until they are healthy"
+cmd = "cp ./deploy/docker-compose.envlocal.yml docker-compose.yml && docker compose up --build --detach --wait --wait-timeout 300"
+
+[tool.pixi.tasks.docker-down]
+description = "Stop and remove the containers"
+cmd = "docker compose down"
+
 [tool.pixi.environments]
 default = { features = [
   "dev",

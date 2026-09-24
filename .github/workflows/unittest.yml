@@ -29,19 +29,16 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.10.2
 
       - name: Start docker containers
-        run: |
-          cp ./deploy/docker-compose.envlocal.yml docker-compose.yml
-          docker compose up --build -d
-
-      - name: Sleep, wait for containers to start up
-        run: sleep 30
+        run: pixi run docker-up
 
       - name: Run unit tests
         run: pixi run test
 
       - name: Stop the coverage process
-        # Stopping the coverage process allows the code coverage to be written to disk
-        run: docker exec live_data_server-django-1 /bin/bash -c "pkill coverage"
+        # Stopping the coverage process allows the code coverage to be written to disk.
+        # Match on the full command line: the coverage console script execs the python
+        # binary directly, so the process name is "python3.x" rather than "coverage".
+        run: docker exec live_data_server-django-1 pkill -f coverage
 
       - name: Copy code coverage out of docker container
         run: docker cp live_data_server-django-1:/var/www/livedata/app /tmp/
@@ -56,7 +53,7 @@ jobs:
 
       - name: Bring down docker containers completely now
         # This will completely remove the containers
-        run: docker compose down
+        run: pixi run docker-down
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7

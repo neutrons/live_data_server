@@ -1,4 +1,4 @@
-FROM ghcr.io/prefix-dev/pixi:0.50.2-jammy AS base
+FROM ghcr.io/prefix-dev/pixi:0.81.0 AS base
 
 ### System dependencies and cron job setup
 RUN apt-get update -y && \
