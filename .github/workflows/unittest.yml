@@ -20,6 +20,10 @@ jobs:
       DJANGO_SUPERUSER_USERNAME: livedatauser
       DJANGO_SUPERUSER_PASSWORD: livedatapass
       COVERAGE_RUN: coverage run -m
+      # Newer Docker Compose delegates "compose build" to buildx bake, which refuses the
+      # "network: host" build setting in the compose file unless an entitlement is granted
+      # on the command line. Use the classic builder, which honors the setting directly.
+      COMPOSE_BAKE: "false"
 
     steps:
       - name: Checkout code
